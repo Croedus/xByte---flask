@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}Košík | xByte{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
+<div class="container">
+    <h1 class="page-title">Váš nákupní košík</h1>
+    
+    <div class="cart-container" id="cart-container">
+        <!-- Obsah košíku bude dynamicky načten pomocí JavaScriptu -->
+    </div>
+    
+    <!-- Login modal -->
+    <div id="login-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Pro pokračování se přihlaste</h2>
+            <p>Pro dokončení objednávky se musíte přihlásit do svého účtu.</p>
+            <div class="modal-buttons">
+                <a href="{{ url_for('login') }}" class="login-btn">Přihlásit se</a>
+                <a href="{{ url_for('register') }}" class="register-btn">Registrovat se</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Order success modal -->
+    <div id="order-success-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Objednávka byla odeslána</h2>
+            <p>Děkujeme za Vaši objednávku. Na Váš e-mail byla odeslána potvrzovací zpráva.</p>
+            <div class="modal-buttons">
+                <a href="{{ url_for('index') }}" class="continue-btn">Pokračovat</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Modal elements
+        const loginModal = document.getElementById('login-modal');
+        const orderSuccessModal = document.getElementById('order-success-modal');
+        const closeButtons = document.querySelectorAll('.close-modal');
+        
+        // Close modal functionality
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                loginModal.style.display = 'none';
+                orderSuccessModal.style.display = 'none';
+            });
+        });
+        
+        // Funkce pro vykreslení košíku
+        function renderCart() {
+            const cartContainer = document.getElementById('cart-container');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (cart.length === 0) {
+                // Košík je prázdný
+                cartContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart fa-5x"></i>
+                        <h2>Váš košík je prázdný</h2>
+                        <p>Vypadá to, že jste ještě nepřidali žádné produkty do košíku.</p>
+                        <a href="{{ url_for('produkty') }}" class="continue-shopping-btn">Pokračovat v nákupu</a>
+                    </div>
+                `;
+            } else {
+                // Výpočet celkové ceny
+                let totalPrice = 0;
+                let cartItemsHTML = '';
+                
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    totalPrice += itemTotal;
+                    
+                    cartItemsHTML += `
+                        <div class="cart-item" data-id="${item.id}">
+                            <img src="{{ url_for('static', filename='images/') }}${item.image}" alt="${item.name}">
+                            <div class="cart-item-details">
+                                <h3>${item.name}</h3>
+                                <p>${item.price} Kč × ${item.quantity} = ${itemTotal} Kč</p>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn decrease-btn" data-id="${item.id}">-</button>
+                                    <input type="number" value="${item.quantity}" min="1" max="99" class="quantity-input" data-id="${item.id}">
+                                    <button class="quantity-btn increase-btn" data-id="${item.id}">+</button>
+                                </div>
+                            </div>
+                            <button class="remove-btn" data-id="${item.id}">Odstranit</button>
+                        </div>
+                    `;
+                });
+                
+                // Vykreslení košíku s položkami a souhrnem
+                cartContainer.innerHTML = `
+                    <div class="cart-items">
+                        ${cartItemsHTML}
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <h3>Souhrn objednávky</h3>
+                        <div class="summary-row">
+                            <span>Mezisoučet:</span>
+                            <span>${totalPrice} Kč</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Doprava:</span>
+                            <span>99 Kč</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Celkem:</span>
+                            <span>${totalPrice + 99} Kč</span>
+                        </div>
+                        <button class="checkout-btn">Objednat a zaplatit</button>
+                    </div>
+                `;
+                
+                // Přidání event listenerů po vykreslení košíku
+                addCartEventListeners();
+                
+                // Přidání event listeneru pro tlačítko objednávky
+                const checkoutButton = document.querySelector('.checkout-btn');
+                if (checkoutButton) {
+                    checkoutButton.addEventListener('click', function() {
+                        processOrder(cart, totalPrice + 99);
+                    });
+                }
+            }
+        }
+        
+        // Funkce pro zpracování objednávky
+        function processOrder(cart, totalPrice) {
+            // Nejprve zkontrolujeme, zda je uživatel přihlášen
+            fetch('{{ url_for("check_auth") }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.authenticated) {
+                        // Uživatel je přihlášen, zpracujeme objednávku
+                        submitOrder(cart, totalPrice);
+                    } else {
+                        // Uživatel není přihlášen, zobrazíme modal
+                        loginModal.style.display = 'flex';
+                    }
+                })
+                .catch(error => {
+                    console.error('Chyba při kontrole přihlášení:', error);
+                    alert('Došlo k chybě při kontrole přihlášení. Zkuste to prosím znovu.');
+                });
+        }
+        
+        // Funkce pro odeslání objednávky na server
+        function submitOrder(cart, totalPrice) {
+            fetch('{{ url_for("place_order") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    items: cart,
+                    totalPrice: totalPrice
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Objednávka byla úspěšná
+                    localStorage.removeItem('cart'); // Vymaže košík
+                    orderSuccessModal.style.display = 'flex';
+                } else {
+                    // Došlo k chybě
+                    if (data.insufficientStock) {
+                        // Nedostatek zboží - formátujeme specifickou hlášku
+                        let errorMessage = "Nedostatek zboží na skladě:<br>";
+                        data.insufficientStock.forEach(item => {
+                            errorMessage += `- ${item.name}: požadováno ${item.requested} ks, skladem ${item.available} ks<br>`;
+                        });
+                        
+                        // Vytvoříme a zobrazíme modální okno s chybou
+                        const errorModal = document.createElement('div');
+                        errorModal.className = 'modal';
+                        errorModal.style.display = 'flex';
+                        errorModal.innerHTML = `
+                            <div class="modal-content">
+                                <span class="close-modal">&times;</span>
+                                <h2>Nelze dokončit objednávku</h2>
+                                <div>${errorMessage}</div>
+                                <div class="modal-buttons">
+                                    <button class="continue-btn">Rozumím</button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.body.appendChild(errorModal);
+                        
+                        // Přidáme event listenery pro zavření
+                        errorModal.querySelector('.close-modal').addEventListener('click', function() {
+                            errorModal.remove();
+                        });
+                        
+                        errorModal.querySelector('.continue-btn').addEventListener('click', function() {
+                            errorModal.remove();
+                        });
+                    } else {
+                        // Jiná chyba
+                        alert('Chyba při zpracování objednávky: ' + data.message);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Chyba při odesílání objednávky:', error);
+                alert('Došlo k chybě při odesílání objednávky. Zkuste to prosím znovu.');
+            });
+        }
+        
+        // Přidání event listenerů pro tlačítka v košíku
+        function addCartEventListeners() {
+            // Event listenery pro tlačítka + a -
+            document.querySelectorAll('.increase-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    updateQuantity(this.getAttribute('data-id'), 1);
+                });
+            });
+            
+            document.querySelectorAll('.decrease-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    updateQuantity(this.getAttribute('data-id'), -1);
+                });
+            });
+            
+            // Event listener pro přímou změnu množství v inputu
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const productId = this.getAttribute('data-id');
+                    const newQuantity = parseInt(this.value);
+                    
+                    if (newQuantity < 1) {
+                        this.value = 1;
+                        updateCartItemQuantity(productId, 1);
+                    } else {
+                        updateCartItemQuantity(productId, newQuantity);
+                    }
+                });
+            });
+            
+            // Event listener pro tlačítko odstranit
+            document.querySelectorAll('.remove-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    removeFromCart(this.getAttribute('data-id'));
+                });
+            });
+        }
+        
+        // Funkce pro aktualizaci množství o +1 nebo -1
+        function updateQuantity(productId, change) {
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            const productIndex = cart.findIndex(item => item.id === productId);
+            
+            if (productIndex !== -1) {
+                // Zajištění minimálního množství 1
+                cart[productIndex].quantity = Math.max(1, cart[productIndex].quantity + change);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+            }
+        }
+        
+        // Funkce pro nastavení konkrétního množství
+        function updateCartItemQuantity(productId, quantity) {
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            const productIndex = cart.findIndex(item => item.id === productId);
+            
+            if (productIndex !== -1) {
+                cart[productIndex].quantity = quantity;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+            }
+        }
+        
+        // Funkce pro odstranění položky z košíku
+        function removeFromCart(productId) {
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            const updatedCart = cart.filter(item => item.id !== productId);
+            localStorage.setItem('cart', JSON.stringify(updatedCart));
+            renderCart();
+        }
+        
+        // Inicializace košíku při načtení stránky
+        renderCart();
+    });
+</script>
+{% endblock %}

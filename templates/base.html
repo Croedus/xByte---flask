@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}xByte{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul class="nav-left">
+                <li class="logo-item">
+                    <img src="{{ url_for('static', filename='images/xbyte.png') }}" alt="xByte Logo" class="nav-logo">
+                </li>
+                <li><a href="{{ url_for('index') }}">Domů</a></li>
+                <li><a href="{{ url_for('produkty') }}">Produkty</a></li>
+                <li><a href="{{ url_for('kontakt') }}">Kontakt</a></li>
+            </ul>
+            <ul class="nav-right">
+                <li class="cart-icon">
+                    <a href="{{ url_for('kosik') }}">
+                        <div class="cart-container">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-badge">0</span>
+                        </div>
+                        <span>0 Kč</span>
+                    </a>
+                </li>
+                {% if session.get('username') %}
+                    <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Odhlásit se</a></li>
+                {% else %}
+                    <li class="login-icon">
+                        <a href="{{ url_for('login') }}">
+                            <i class="fas fa-user"></i>
+                            <span>Přihlásit se</span><br>
+                            <span class="small-text">Nová registrace</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Aktualizováno: zobrazení flash zpráv jako překryvných elementů -->
+    {% if get_flashed_messages() %}
+    <div class="flash-messages">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 xByte. Všechna práva vyhrazena.</p>
+    </footer>
+
+    <script>
+        // Funkce pro aktualizaci počtu položek a celkové ceny v košíku
+        function updateCartDisplay() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartBadge = document.querySelector('.cart-badge');
+            const cartPrice = document.querySelector('.cart-container + span');
+            
+            // Výpočet celkového počtu položek a celkové ceny
+            let totalItems = 0;
+            let totalPrice = 0;
+            
+            cart.forEach(item => {
+                totalItems += parseInt(item.quantity);
+                totalPrice += parseFloat(item.price) * parseInt(item.quantity);
+            });
+            
+            // Aktualizace zobrazení
+            cartBadge.textContent = totalItems;
+            cartPrice.textContent = totalPrice + ' Kč';
+        }
+
+        // Inicializace košíku, pokud neexistuje
+        if (!localStorage.getItem('cart')) {
+            localStorage.setItem('cart', JSON.stringify([]));
+        }
+        
+        // Volání funkce při načtení stránky
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartDisplay();
+        });
+        
+        // Přidáno: Automatické zmizení flash zpráv po 5 sekundách
+        setTimeout(function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                message.style.opacity = '0';
+                message.style.transition = 'opacity 1s';
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 1000);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

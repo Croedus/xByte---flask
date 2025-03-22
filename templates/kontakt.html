@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Kontakt{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Sekce kontaktování -->
+    <div class="header">
+        <h1>Kontaktujte nás</h1>
+        <p>Najdete nás na mapě, přečtěte si informace o prodejně a kontaktujte nás prostřednictvím formuláře níže.</p>
+    </div>
+
+    <!-- Mapa prodejny -->
+    <div class="map">
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.6437508628287!2d14.093989178176706!3d50.142937236810205!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470bb70040ff7231%3A0x95a63f2aa634fb1!2sxByte%20VT6%20(fiktivn%C3%AD%20firma)!5e0!3m2!1scs!2scz!4v1732266829649!5m2!1scs!2scz"
+            width="100%" 
+            height="100%" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+
+    <!-- Informace o prodejně -->
+    <div class="info">
+        <h2>Informace o prodejně</h2>
+        <p><strong>Adresa:</strong> SPŠ a VOŠ, Kladno - VT6</p>
+        <p><strong>Telefon:</strong> +420 702 185 474</p>
+        <p><strong>E-mail:</strong> xbyte@email.cz</p>
+        <br>
+        <p><strong>Otevírací doba:</strong></p>
+        <p class="opening-hours">Každý den: 9:00 - 17:00</p>
+        <p class="opening-hours">(Fiktivní firma)</p>
+    </div>
+
+    <!-- Kontaktní formulář -->
+    <form action="{{ url_for('kontaktuj') }}" method="POST">
+        <h1>Kontaktní formulář</h1>
+        <input type="text" name="jmeno" placeholder="Vaše jméno" required>
+        <input type="email" name="email" placeholder="Váš e-mail" required>
+        <textarea name="zprava" placeholder="Vaše zpráva" required></textarea>
+        <button type="submit">Odeslat</button>
+    </form>
+
+    <!-- Seznam zaměstnanců -->
+    <div class="employees">
+        <h1>Náš tým</h1>
+        <div class="employee-list">
+            <!-- Zaměstnanec 1 -->
+            <div class="employee-card">
+                <h3>Filip Bureš</h3>
+                <p><strong>Jednatel společnosti</strong></p>
+                <p><strong>E-mail:</strong> buresf@spskladno.cz</p>
+                <p><strong>Telefon:</strong> +420 444 555 666</p>
+                <div class="business-cards">
+                    <img src="{{ url_for('static', filename='images/vizitky/Bures.png') }}" alt="Přední strana vizitky">
+                    <img src="{{ url_for('static', filename='images/vizitky/Bures2.png') }}" alt="Zadní strana vizitky">
+                </div>
+            </div>
+
+            <!-- Zaměstnanec 2 -->
+            <div class="employee-card">
+                <h3>David Stejskal</h3>
+                <p><strong>HR manager</strong></p>
+                <p><strong>E-mail:</strong> stejskad@spskladno.cz</p>
+                <p><strong>Telefon:</strong> +420 604 686 959</p>
+                <div class="business-cards">
+                    <img src="{{ url_for('static', filename='images/vizitky/Stejskal.png') }}" alt="Přední strana vizitky">
+                    <img src="{{ url_for('static', filename='images/vizitky/Stejskal2.png') }}" alt="Zadní strana vizitky">
+                </div>
+            </div>
+
+            <!-- Zaměstnanec 3 -->
+            <div class="employee-card">
+                <h3>Viktor Mudra</h3>
+                <p><strong>Ředitel účetnictví</strong></p>
+                <p><strong>E-mail:</strong> l3oe@email.cz</p>
+                <p><strong>Telefon:</strong> +420 773 710 644</p>
+                <div class="business-cards">
+                    <img src="{{ url_for('static', filename='images/vizitky/Mudra.png') }}" alt="Přední strana vizitky">
+                    <img src="{{ url_for('static', filename='images/vizitky/Mudra2.png') }}" alt="Zadní strana vizitky">
+                </div>
+            </div>
+
+            <!-- Zaměstnanec 4 -->
+            <div class="employee-card">
+                <h3>Lukáš Kaftan</h3>
+                <p><strong>Ředitel technického oddělení</strong></p>
+                <p><strong>E-mail:</strong> kaftanl@spskladno.cz</p>
+                <p><strong>Telefon:</strong> +420 123 321 456</p>
+                <div class="business-cards">
+                    <img src="{{ url_for('static', filename='images/vizitky/Kaftan.png') }}" alt="Přední strana vizitky">
+                    <img src="{{ url_for('static', filename='images/vizitky/Kaftan2.png') }}" alt="Zadní strana vizitky">
+                </div>
+            </div>
+
+            <!-- Zaměstnanec 5 -->
+            <div class="employee-card">
+                <h3>Adam Pech</h3>
+                <p><strong>Správce logistiky</strong></p>
+                <p><strong>E-mail:</strong> pecha@spskladno.cz</p>
+                <p><strong>Telefon:</strong> +420 123 321 456</p>
+                <div class="business-cards">
+                    <img src="{{ url_for('static', filename='images/vizitky/Pech.png') }}" alt="Přední strana vizitky">
+                    <img src="{{ url_for('static', filename='images/vizitky/Pech2.png') }}" alt="Zadní strana vizitky">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

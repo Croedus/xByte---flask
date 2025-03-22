@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/produkty.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <div class="product-container">
+        <h1 class="product-header page-title">Nabídka produktů</h1>
+        <div class="product-grid">
+            <!-- Zde mohou být produkty načítané z databáze -->
+            {% for produkt in produkty %}
+            <div class="product-card">
+                <img src="{{ url_for('static', filename='images/' + produkt.image) }}" alt="{{ produkt.name }}">
+                <h2>{{ produkt.name }}</h2>
+                <p>{{ produkt.description }}</p>
+                <div class="stock-info">
+                    <span class="stock-label">Skladem</span>
+                    <span class="stock-count">{{ produkt.stock if produkt.stock is defined else 5 }}</span>
+                    <span class="stock-unit">kusů</span>
+                </div>
+                <div class="product-actions">
+                    <div class="price">{{ produkt.price }} Kč</div>
+                    <button class="add-to-cart-button" data-id="{{ produkt.id }}" data-name="{{ produkt.name }}" data-price="{{ produkt.price }}" data-image="{{ produkt.image }}">Do košíku</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializace košíku, pokud neexistuje
+            if (!localStorage.getItem('cart')) {
+                localStorage.setItem('cart', JSON.stringify([]));
+            }
+            
+            // Přidání event listenerů pro tlačítka "Do košíku"
+            const addToCartButtons = document.querySelectorAll('.add-to-cart-button');
+            
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    const productName = this.getAttribute('data-name');
+                    const productPrice = parseFloat(this.getAttribute('data-price'));
+                    const productImage = this.getAttribute('data-image');
+                    
+                    // Načtení aktuálního košíku
+                    const cart = JSON.parse(localStorage.getItem('cart'));
+                    
+                    // Kontrola, zda produkt již v košíku existuje
+                    const existingProductIndex = cart.findIndex(item => item.id === productId);
+                    
+                    if (existingProductIndex !== -1) {
+                        // Produkt již existuje, aktualizujeme množství
+                        cart[existingProductIndex].quantity += 1;
+                    } else {
+                        // Produkt neexistuje, přidáme nový
+                        cart.push({
+                            id: productId,
+                            name: productName,
+                            price: productPrice,
+                            image: productImage,
+                            quantity: 1
+                        });
+                    }
+                    
+                    // Uložení aktualizovaného košíku
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    
+                    // Aktualizace zobrazení košíku v navigaci
+                    updateCartDisplay();
+                    
+                    // Oznámení uživateli
+                    alert('Produkt byl přidán do košíku!');
+                });
+            });
+        });
+    </script>
+{% endblock %}

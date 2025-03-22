@@ -1,0 +1,911 @@
+/* Základní styly pro celý web */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    color: black;
+    background-image: url('../images/pozadi.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hlavička */
+header {
+    background-color: #EBE8E0;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Navigační seznam - nová struktura */
+header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+header ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.nav-left {
+    justify-content: flex-start;
+}
+
+.nav-right {
+    justify-content: flex-end;
+}
+
+header ul li {
+    display: inline;
+}
+
+header ul li a {
+    display: block;
+    padding: 15px 10px;
+    text-decoration: none;
+    color: black;
+    font-size: 16px;
+}
+
+header ul li a:hover,
+header ul li a.active {
+    background-color: #4cc1f0;
+    color: white;
+    border-radius: 5px;
+}
+
+/* Ikona košíku */
+.cart-icon a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cart-container {
+    position: relative;
+    display: inline-block;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Ikona přihlášení */
+.login-icon a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+.login-icon i {
+    font-size: 20px;
+    margin-bottom: 2px;
+}
+
+.login-icon .small-text {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Úvodní sekce s pozadím */
+.index-intro {
+    background-image: url('../images/uvod.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+}
+
+/* Text v úvodní sekci */
+.index-intro-text {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.index-intro-text h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.index-intro-text p {
+    font-size: 1.5rem;
+    margin-top: 0;
+    font-style: italic;
+}
+
+/* Banner */
+.banner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.banner-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Responzivita pro navigaci */
+@media (max-width: 768px) {
+    header nav {
+        flex-direction: column;
+        padding: 10px;
+    }
+    
+    .nav-left, .nav-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .login-icon a {
+        padding: 5px;
+    }
+}
+
+/* Hlavní obsah stránky */
+.index-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px;
+    text-align: center;
+}
+
+/* Sekce s informacemi o funkcích */
+.index-features {
+    display: flex;
+    justify-content: space-around;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.index-feature-card {
+    background-color: #ffffff;
+    color: #333;
+    padding: 30px;
+    width: 30%;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.index-feature-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.index-feature-card p {
+    font-size: 1rem;
+}
+
+.index-feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Responzivita */
+@media (max-width: 768px) {
+    .index-features {
+        flex-direction: column;
+        align-items: center;
+    }
+    .index-feature-card {
+        width: 80%;
+        margin-bottom: 20px;
+    }
+}
+
+/* Letáky - kontejnery */
+.letaky-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+/* Styl pro jednotlivé letáky */
+.letak-image {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+/* Efekt při najetí na obrázek */
+.letak-image:hover {
+    transform: scale(1.05);
+}
+
+/* Produkty - specifické styly pro produkty.html */
+.product-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px;
+    text-align: center;
+}
+
+.product-header {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+    color: #333;
+}
+
+/* Grid pro produktové karty */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    justify-items: center;
+    padding: 0 20px;
+}
+
+.product-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.product-card h2 {
+    font-size: 1.8rem;
+    margin-top: 15px;
+    color: #333;
+}
+
+.product-card p {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #555;
+}
+
+/* Stock info - počet kusů skladem */
+.stock-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0 10px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.stock-label {
+    margin-right: 5px;
+}
+
+.stock-count {
+    font-weight: bold;
+    color: #4cc1f0;
+    margin: 0 4px;
+}
+
+/* Tlačítko - Do košíku a cena */
+.product-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0055a4;
+}
+
+.add-to-cart-button {
+    background-color: #4cc1f0;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: bold;
+}
+
+.add-to-cart-button:hover {
+    background-color: #333;
+}
+
+/* Efekt při najetí na kartu */
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Responzivita pro produkty */
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .product-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .price {
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Kontakt - specifické styly pro kontakt.html */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.header h1, .header p {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.info h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Mapa */
+.map {
+    width: 100%;
+    height: 400px;
+    margin: 20px 0;
+}
+
+/* Formulář */
+form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form h1 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+form input, form textarea, form button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+form button {
+    background-color: #4cc1f0;
+    color: white;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #333;
+}
+
+/* Seznam zaměstnanců */
+.employees {
+    margin-top: 40px;
+}
+
+.employee-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.employee-card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.employee-card h3 {
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+.employee-card p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.business-cards {
+    margin-top: 10px;
+}
+
+.business-cards img {
+    width: 120px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+/* Responzivita pro zaměstnanecké karty */
+@media (max-width: 768px) {
+    .employee-card {
+        width: 45%;
+    }
+}
+
+@media (max-width: 480px) {
+    .employee-card {
+        width: 100%;
+    }
+}
+
+/* Styly pro přihlašovací formulář */
+.login-form h1 {
+    font-size: 50px;
+    padding: 10px;
+    background-color: white;
+    text-align: center;
+    font-weight: normal;
+}
+
+.login-form form {
+    position: relative;
+    z-index: 1;
+    background: #FFFFFF;
+    opacity: 99%;
+    max-width: 260px;
+    margin: 100px auto 100px;
+    padding: 10px 45px 30px 45px;
+    text-align: center;
+}
+
+.login-form form p {
+    font-size: 15px;
+    padding: 1px;
+    text-align: center;
+}
+
+.login-form form input {
+    outline: 0;
+    border-radius: 10px;
+    background: #F2F2F2;
+    width: 100%;
+    border: 0;
+    margin: 0 0 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.login-form form input:hover,
+.login-form form input:focus {
+    background-color: #D3F8F9;
+    transition: all 1s ease 0s;
+}
+
+.login-form form button {
+    text-transform: uppercase;
+    outline: 0;
+    border-radius: 10px;
+    background: #1ADBE5;
+    width: 100%;
+    padding: 15px;
+    color: #FFFFFF;
+    font-size: 14px;
+    cursor: pointer;
+    border-color: black;
+}
+
+.login-form form button:hover,
+.login-form form button:active,
+.login-form form button:focus {
+    background-color: #06C5CF;
+    transition: all 1s ease 0s;
+}
+
+.login-form form .message {
+    margin: 15px 0 0;
+    color: #B3B3B3;
+    font-size: 12px;
+}
+
+.login-form form .message a {
+    color: #06C5CF;
+    text-decoration: none;
+}
+
+/* Styly pro košík */
+.cart-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+.cart-items {
+    flex: 3;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.cart-item {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+    align-items: center;
+}
+
+.cart-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.cart-item-details {
+    flex: 1;
+    padding: 0 20px;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    max-width: 120px;
+}
+
+.quantity-controls input {
+    width: 40px;
+    text-align: center;
+    margin: 0 5px;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.remove-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cart-summary {
+    flex: 1;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    align-self: flex-start;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+}
+
+.total {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.checkout-btn {
+    width: 100%;
+    background: #4cc1f0;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.checkout-btn:hover {
+    background: #333;
+}
+
+.empty-cart {
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.empty-cart i {
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.continue-shopping-btn {
+    display: inline-block;
+    background: #4cc1f0;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.continue-shopping-btn:hover {
+    background: #333;
+}
+
+/* Responzivní design */
+@media (max-width: 768px) {
+    .cart-container {
+        flex-direction: column;
+    }
+}
+
+/* Obecné styly stránky */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+h1.page-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Styl pro flash zprávy jako překryvné elementy */
+.flash-messages {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    width: 80%;
+    max-width: 600px;
+}
+
+.flash-message {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s;
+    text-align: center;
+}
+
+.flash-message.error {
+    background-color: #f44336;
+}
+
+.flash-message.warning {
+    background-color: #ff9800;
+}
+
+.flash-message.info {
+    background-color: #2196F3;
+}
+
+.flash-message.alert-error, .flash-message.alert-danger {
+    background-color: #f44336;
+}
+
+.flash-message.alert-success {
+    background-color: #4CAF50;
+}
+
+.flash-message.alert-info {
+    background-color: #2196F3;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Styly pro alerty jako překryvné elementy */
+.alert {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    width: 80%;
+    text-align: center;
+    animation: fadeInAlert 0.5s;
+}
+
+@keyframes fadeInAlert {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error, .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+@media (max-width: 768px) {
+    .flash-messages, .alert {
+        width: 90%;
+    }
+}
+
+.nav-left .logo-item {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.nav-logo {
+    height: 100px; /* Upravte podle velikosti vašeho loga */
+    width: auto;
+    vertical-align: middle;
+}
+
+/* Main content to push footer to bottom */
+main {
+    flex: 1;
+}
+
+/* Footer styly */
+footer {
+    background-color: #EBE8E0;
+    color: #333;
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    width: 100%;
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+}
+
+footer p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Modal styles - přidáno z inline CSS */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 500px;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.login-btn, .register-btn, .continue-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.login-btn:hover, .register-btn:hover, .continue-btn:hover {
+    background-color: #0056b3;
+}

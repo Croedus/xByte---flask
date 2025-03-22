@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+    
+    <div class="index-intro">
+        <div class="index-intro-text">
+            <h1>Vítejte na xByte</h1>
+            <p>Nejlepší technologie pro vaše potřeby</p>
+        </div>
+    </div>
+
+    <div class="index-container">
+        <h2>Naše nabídka</h2>
+        <p>Podívejte se na naše produkty a služby.</p>
+        <div class="index-features">
+            <div class="index-feature-card">
+                <h2>Rychlé doručení</h2>
+                <p>Vaše objednávky doručujeme expresně.</p>
+            </div>
+            <div class="index-feature-card">
+                <h2>Kvalitní produkty</h2>
+                <p>Nabízíme pouze osvědčené technologie.</p>
+            </div>
+            <div class="index-feature-card">
+                <h2>Podpora 24/7</h2>
+                <p>Jsme tu pro vás kdykoliv budete potřebovat.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

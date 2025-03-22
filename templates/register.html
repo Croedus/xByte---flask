@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Registrace | xByte{% endblock %}
+
+{% block content %}
+<div class="login-form">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    <form action="{{ url_for('register') }}" method="post">
+        <h1>Registrace</h1>
+        <div class="div-fill">
+            <label for="firstname">Jméno</label>
+            <input type="text" name="firstname" required placeholder="Zadejte jméno">
+        </div>
+
+        <div class="div-fill">
+            <label for="lastname">Příjmení</label>
+            <input type="text" name="lastname" required placeholder="Zadejte příjmení">
+        </div>
+
+        <div class="div-fill">
+            <label for="username">Uživatelské jméno</label>
+            <input type="text" name="username" required placeholder="Zadejte uživatelské jméno">
+        </div>
+
+        <div class="div-fill">
+            <label for="email">E-Mail</label>
+            <input type="email" name="email" required placeholder="Zadejte E-Mail">
+        </div>
+
+        <div class="div-fill">
+            <label for="password">Heslo</label>
+            <input type="password" name="password" required placeholder="Zadejte heslo">
+        </div>
+
+        <div class="div-fill">
+            <label for="password_confirm">Potvrzení hesla</label>
+            <input type="password" name="password_confirm" required placeholder="Potvrďte heslo">
+        </div>
+
+        <button type="submit" class="btn">Registrovat se</button>
+
+        <div class="form-links">
+            <a href="{{ url_for('index') }}">Vrátit se zpět</a>
+            <a href="{{ url_for('login') }}">Již máte účet? Přihlaste se zde</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
