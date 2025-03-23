@@ -79,7 +79,7 @@
                     
                     cartItemsHTML += `
                         <div class="cart-item" data-id="${item.id}">
-                            <img src="{{ url_for('static', filename='images/') }}${item.image}" alt="${item.name}">
+                            <img src="{{ url_for('static', filename='images/produkty/') }}${item.image}" alt="${item.name}">
                             <div class="cart-item-details">
                                 <h3>${item.name}</h3>
                                 <p>${item.price} Kč × ${item.quantity} = ${itemTotal} Kč</p>

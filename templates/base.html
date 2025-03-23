@@ -29,7 +29,9 @@
                     </a>
                 </li>
                 {% if session.get('username') %}
+                    <li><a href="{{ url_for('moje_objednavky') }}"><i class="fas fa-box"></i> Moje objednávky</a></li>
                     <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Odhlásit se</a></li>
+                    <li><a href="{{ url_for('nastaveni') }}"><i class="fas fa-cog"></i> Nastavení</a></li>
                 {% else %}
                     <li class="login-icon">
                         <a href="{{ url_for('login') }}">
@@ -67,8 +69,8 @@
                             <i class="fas fa-phone"></i>
                         </div>
                         <div class="info-text">
-                            <div class="info-title">420 547 425 372</div>
-                            <div class="info-subtitle">volejte od Po-Pá 8-16 hod.</div>
+                            <div class="info-title">+420 604 686 999</div>
+                            <div class="info-subtitle">volejte od Po-Ne 9-17 hod.</div>
                         </div>
                     </div>
                     
@@ -77,8 +79,10 @@
                             <i class="fas fa-comment"></i>
                         </div>
                         <div class="info-text">
-                            <div class="info-title">Zeptejte se rovnou</div>
-                            <div class="info-subtitle">v našem chatu Po-Pá 8-16 hod.</div>
+                            <a href="{{ url_for('kontakt') }}" class="footer-link">
+                                <div class="info-title">Zeptejte se rovnou</div>
+                                <div class="info-subtitle">v našem kontaktním formuláři Po-Ne 9-17 hod.</div>
+                            </a>
                         </div>
                     </div>
                     
@@ -87,8 +91,10 @@
                             <i class="fas fa-envelope"></i>
                         </div>
                         <div class="info-text">
-                            <div class="info-title">info@xbyte.cz</div>
-                            <div class="info-subtitle">pište na náš e-mail</div>
+                            <a href="mailto:info@xbyte.cz" class="footer-link">
+                                <div class="info-title">xbyte@email.cz</div>
+                                <div class="info-subtitle">pište na náš e-mail</div>
+                            </a>
                         </div>
                     </div>
                 </div>

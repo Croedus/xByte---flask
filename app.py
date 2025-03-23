@@ -221,6 +221,107 @@ def produkty():
     except mysql.connector.Error as err:
         flash(f"Chyba při načítání produktů: {str(err)}", "error")
         return render_template('produkty.html', produkty=[])
+    
+@app.route('/moje-objednavky')
+def moje_objednavky():
+    # Kontrola, zda je uživatel přihlášen
+    if 'user_id' not in session:
+        flash("Pro zobrazení objednávek se musíte přihlásit!", "error")
+        return redirect(url_for('login'))
+    
+    try:
+        conn = get_db_connection()
+        if not conn:
+            flash("Nelze se připojit k databázi!", "error")
+            return render_template('moje_objednavky.html', objednavky=[])
+            
+        cursor = conn.cursor(dictionary=True)
+        
+        # Získání všech objednávek uživatele
+        cursor.execute("""
+            SELECT o.id, o.celkova_cena, o.datum_objednavky, 
+                   COUNT(po.id) AS pocet_polozek
+            FROM xbyte_objednavky o
+            LEFT JOIN xbyte_polozky_objednavky po ON o.id = po.objednavka_id
+            WHERE o.user_id = %s
+            GROUP BY o.id
+            ORDER BY o.datum_objednavky DESC
+        """, (session['user_id'],))
+        
+        objednavky = cursor.fetchall()
+        
+        # Pro každou objednávku načteme detaily položek
+        for obj in objednavky:
+            cursor.execute("""
+                SELECT po.id, po.mnozstvi, po.cena_za_kus, 
+                       p.name, p.image
+                FROM xbyte_polozky_objednavky po
+                JOIN xbyte_produkty p ON po.produkt_id = p.id
+                WHERE po.objednavka_id = %s
+            """, (obj['id'],))
+            
+            obj['polozky'] = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        return render_template('moje_objednavky.html', objednavky=objednavky)
+    
+    except mysql.connector.Error as err:
+        flash(f"Chyba při načítání objednávek: {str(err)}", "error")
+        return render_template('moje_objednavky.html', objednavky=[])
+
+@app.route('/nastaveni', methods=['GET', 'POST'])
+def nastaveni():
+    # Kontrola, zda je uživatel přihlášen
+    if 'user_id' not in session:
+        flash("Pro přístup k nastavení se musíte přihlásit!", "error")
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        stare_heslo = request.form.get('stare_heslo')
+        nove_heslo = request.form.get('nove_heslo')
+        potvrzeni_hesla = request.form.get('potvrzeni_hesla')
+        
+        # Kontrola, že nové heslo a potvrzení se shodují
+        if nove_heslo != potvrzeni_hesla:
+            flash("Nové heslo a potvrzení hesla se neshodují!", "error")
+            return redirect(url_for('nastaveni'))
+        
+        try:
+            conn = get_db_connection()
+            if not conn:
+                flash("Nelze se připojit k databázi!", "error")
+                return redirect(url_for('nastaveni'))
+                
+            cursor = conn.cursor(dictionary=True)
+            
+            # Ověření starého hesla
+            cursor.execute("SELECT password FROM xbyte WHERE id = %s", (session['user_id'],))
+            user = cursor.fetchone()
+            
+            if not user or not check_password_hash(user['password'], stare_heslo):
+                flash("Nesprávné stávající heslo!", "error")
+                cursor.close()
+                conn.close()
+                return redirect(url_for('nastaveni'))
+            
+            # Aktualizace hesla
+            hashed_password = generate_password_hash(nove_heslo)
+            cursor.execute(
+                "UPDATE xbyte SET password = %s WHERE id = %s",
+                (hashed_password, session['user_id'])
+            )
+            conn.commit()
+            
+            flash("Heslo bylo úspěšně změněno.", "success")
+            cursor.close()
+            conn.close()
+            
+        except mysql.connector.Error as err:
+            flash(f"Chyba při změně hesla: {str(err)}", "error")
+    
+    return render_template('nastaveni.html')
 
 @app.route('/kontakt')
 def kontakt():
@@ -403,4 +504,7 @@ def place_order():
         })
 
 if __name__ == '__main__':
+    # Spustí aplikaci na adrese 0.0.0.0 (což znamená, že je dostupná ze všech IP adres)
+    # a na portu 5000. Parametr debug=True znamená, že aplikace běží v režimu ladění,
+    # což umožňuje automatické restartování aplikace při změnách v kódu a zobrazuje chybové hlášky.
     app.run(host='0.0.0.0', port=5000, debug=True)

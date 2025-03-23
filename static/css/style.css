@@ -11,6 +11,16 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden; /* Zamezí horizontálnímu scrollování */
+    width: 100%; /* Zajistí, že tělo stránky zabírá celou šířku */
+    max-width: 100%; /* Omezí maximální šířku na 100% */
+    box-sizing: border-box; /* Započítá padding do celkové šířky */
+}
+
+/* Přidání html elementu pro zamezení horizontálního scrollování */
+html {
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 /* Hlavička */
@@ -45,6 +55,18 @@ header ul {
 
 .nav-right {
     justify-content: flex-end;
+}
+
+.nav-left .logo-item {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.nav-logo {
+    height: 100px; /* Upravte podle velikosti vašeho loga */
+    width: auto;
+    vertical-align: middle;
 }
 
 header ul li {
@@ -114,7 +136,7 @@ header ul li a.active {
 
 /* Úvodní sekce s pozadím */
 .index-intro {
-    background-image: url('../images/uvod.png');
+    background-image: url('../images/reklama.webp');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -162,6 +184,11 @@ header ul li a.active {
     object-fit: cover;
 }
 
+/* Main content to push footer to bottom */
+main {
+    flex: 1;
+}
+
 /* Responzivita pro navigaci */
 @media (max-width: 768px) {
     header nav {
@@ -181,11 +208,21 @@ header ul li a.active {
 }
 
 /* Hlavní obsah stránky */
-.index-container {
+.index-container, .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px;
     text-align: center;
+}
+
+.container {
+    margin: 40px auto;
+    padding: 20px;
+}
+
+h1.page-title {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
 /* Sekce s informacemi o funkcích */
@@ -292,10 +329,36 @@ header ul li a.active {
     flex-direction: column;
 }
 
+/* UPRAVENÉ STYLY PRO OBRÁZKY PRODUKTŮ */
 .product-card img {
     width: 100%;
-    height: auto;
+    height: 200px; /* Pevná výška pro všechny obrázky */
     border-radius: 10px;
+    object-fit: contain; /* Změní se z 'cover' na 'contain', aby byl celý obrázek vidět */
+    background-color: #f9f9f9; /* Světlé pozadí pro obrázky */
+    display: block; /* Zajistí správné zarovnání */
+    margin: 0 auto 15px; /* Přidá spodní margin */
+}
+
+/* Přidání fallback stylů pro obrázky, které se nenačtou */
+.product-card img:not([src]), 
+.product-card img[src=""], 
+.product-card img.error {
+    min-height: 200px;
+    background-color: #f5f5f5;
+    position: relative;
+}
+
+.product-card img:not([src])::after, 
+.product-card img[src=""]::after, 
+.product-card img.error::after {
+    content: "Obrázek se nenačetl";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #999;
+    font-size: 14px;
 }
 
 .product-card h2 {
@@ -345,7 +408,7 @@ header ul li a.active {
     color: #0055a4;
 }
 
-.add-to-cart-button {
+.add-to-cart-button, .btn-primary {
     background-color: #4cc1f0;
     color: white;
     border: none;
@@ -356,8 +419,16 @@ header ul li a.active {
     font-weight: bold;
 }
 
-.add-to-cart-button:hover {
+.add-to-cart-button:hover, .btn-primary:hover {
     background-color: #333;
+}
+
+.btn-primary {
+    background-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
 }
 
 /* Efekt při najetí na kartu */
@@ -389,13 +460,6 @@ header ul li a.active {
 }
 
 /* Kontakt - specifické styly pro kontakt.html */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: center;
-}
-
 .header h1, .header p {
     font-size: 2rem;
     margin-bottom: 20px;
@@ -447,6 +511,24 @@ form button {
 
 form button:hover {
     background-color: #333;
+}
+
+/* Form group pro nastavení účtu a další formuláře */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
 /* Seznam zaměstnanců */
@@ -603,11 +685,14 @@ form button:hover {
     align-items: center;
 }
 
+/* UPRAVENÉ STYLY PRO OBRÁZKY V KOŠÍKU */
 .cart-item img {
     width: 100px;
     height: 100px;
-    object-fit: cover;
+    object-fit: contain; /* Změněno z 'cover' na 'contain' */
     border-radius: 5px;
+    background-color: #f9f9f9; /* Přidáno světlé pozadí */
+    display: block; /* Zajistí správné zarovnání */
 }
 
 .cart-item-details {
@@ -683,13 +768,17 @@ form button:hover {
     background: #333;
 }
 
-.empty-cart {
+.empty-cart, .empty-objednavky {
     width: 100%;
     background: white;
     border-radius: 8px;
     padding: 40px 20px;
     text-align: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.empty-objednavky {
+    padding: 40px 0;
 }
 
 .empty-cart i {
@@ -711,26 +800,7 @@ form button:hover {
     background: #333;
 }
 
-/* Responzivní design */
-@media (max-width: 768px) {
-    .cart-container {
-        flex-direction: column;
-    }
-}
-
-/* Obecné styly stránky */
-.container {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 20px;
-}
-
-h1.page-title {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-/* Styl pro flash zprávy jako překryvné elementy */
+/* Styly pro flash zprávy jako překryvné elementy */
 .flash-messages {
     position: fixed;
     top: 20px;
@@ -820,96 +890,124 @@ h1.page-title {
     border: 1px solid #bee5eb;
 }
 
+/* Responzivní design pro košík a alert zprávy */
 @media (max-width: 768px) {
+    .cart-container {
+        flex-direction: column;
+    }
+    
     .flash-messages, .alert {
         width: 90%;
     }
 }
 
-.nav-left .logo-item {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-}
-
-.nav-logo {
-    height: 100px; /* Upravte podle velikosti vašeho loga */
-    width: auto;
-    vertical-align: middle;
-}
-
-/* Main content to push footer to bottom */
-main {
-    flex: 1;
-}
-
-/* Nový tmavý footer */
+/* Tmavý footer - základní styl */
 .dark-footer {
     background-color: hsl(0, 0%, 100%);
     color: rgb(0, 0, 0);
     padding: 30px 20px;
     width: 100%;
+    box-sizing: border-box; /* Zajistí správnou kalkulaci šířky včetně paddingu */
 }
 
+/* Centrální obsah footeru s omezením šířky */
 .footer-content {
-    max-width: 1200px;
+    max-width: 1200px; /* Stejná maximální šířka jako index-container */
     margin: 0 auto;
     text-align: center;
 }
 
+/* Nadpis ve footeru */
 .footer-heading {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 25px;
 }
 
+/* Kontejner pro informační boxy ve footeru - upraven pro zobrazení vedle sebe */
 .footer-info-container {
     display: flex;
     justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-wrap: nowrap; /* Zajistí, že boxy zůstanou na jednom řádku */
+    gap: 30px;
+    margin-top: 40px;
 }
 
+/* Jednotlivé informační boxy ve footeru - stylované pro zobrazení ikony a textu vedle sebe */
 .footer-info {
+    background-color: #ffffff;
+    color: #333;
+    padding: 20px;
+    width: 30%;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
     display: flex;
+    flex-direction: row; /* Změna na řádek pro ikonu vlevo a text vpravo */
     align-items: center;
-    gap: 15px;
 }
 
+/* Ikona ve footeru */
 .info-icon {
-    color: #ffcc00;
+    color: #4cc1f0;
     font-size: 24px;
-    width: 40px;
+    margin-right: 15px; /* Mezera mezi ikonou a textem */
+    margin-bottom: 0; /* Resetování původního margin-bottom */
 }
 
+/* Text ve footeru */
 .info-text {
-    text-align: left;
+    text-align: left; /* Zarovnání textu doleva pro lepší vzhled vedle ikony */
 }
 
+/* Nadpis informace */
 .info-title {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 18px;
     color: rgb(0, 0, 0);
+    margin-bottom: 5px;
 }
 
+/* Podnadpis informace */
 .info-subtitle {
     font-size: 14px;
     color: #000000;
 }
 
+/* Styl pro odkazy ve footeru */
+.footer-link {
+    text-decoration: none;
+    color: inherit; /* Zachová původní barvu textu */
+    display: block;
+}
+
+.footer-link:hover .info-title {
+    color: #4cc1f0; /* Změna barvy nadpisu při najetí myší */
+}
+
+/* Efekt při najetí myší */
+.footer-info:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Copyright sekce */
 .copyright {
     background-color: #222222;
     color: #999999;
     text-align: center;
     padding: 15px;
     font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 20px; /* Přidaná mezera od informačních boxů */
 }
 
 .copyright p {
     margin: 0;
 }
 
-/* Responzivita pro footer */
+/* Responzivita pro footer na menších zařízeních */
 @media (max-width: 768px) {
     .footer-info-container {
         flex-direction: column;
@@ -917,13 +1015,16 @@ main {
     }
     
     .footer-info {
-        width: 100%;
-        max-width: 300px;
-        justify-content: flex-start;
+        width: 80%;
+        margin-bottom: 20px;
+    }
+    
+    .info-text {
+        text-align: center; /* Při mobilním zobrazení text zarovnáme na střed */
     }
 }
 
-/* Modal styles - přidáno z inline CSS */
+/* Modal styles */
 .modal {
     display: none;
     position: fixed;
@@ -972,4 +1073,136 @@ main {
 
 .login-btn:hover, .register-btn:hover, .continue-btn:hover {
     background-color: #0056b3;
+}
+
+/* Styly pro Moje objednávky */
+.objednavky-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.objednavka-container {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #fff; /* Přidáno bílé pozadí */
+}
+
+.objednavka-header {
+    background-color: #f5f5f5;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.objednavka-meta {
+    display: flex;
+    gap: 20px;
+}
+
+.objednavka-date {
+    color: #666;
+}
+
+.objednavka-price {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.objednavka-items {
+    padding: 15px;
+    background-color: #fff; /* Zajistí bílé pozadí za položkami */
+}
+
+.objednavka-item {
+    display: flex;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.objednavka-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+/* Aktualizace stylování item-image ve vašem CSS */
+.item-image {
+    width: 60px;
+    height: 60px;
+    object-fit: contain; /* Změna z 'cover' na 'contain' */
+    border-radius: 4px;
+    margin-right: 15px;
+    background-color: #f9f9f9; /* Světlejší pozadí, které odpovídá ostatním obrázkům produktů */
+}
+
+.item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-name {
+    font-weight: bold;
+}
+
+.item-price {
+    color: #666;
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+.item-total {
+    font-weight: bold;
+    text-align: right;
+}
+
+/* Styly pro Nastavení účtu */
+.account-section {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.account-section h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.account-info p {
+    margin: 10px 0;
+}
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.btn-primary:hover {
+    background-color: #0069d9;
 }

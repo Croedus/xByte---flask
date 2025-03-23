@@ -10,7 +10,7 @@
             <!-- Zde mohou být produkty načítané z databáze -->
             {% for produkt in produkty %}
             <div class="product-card">
-                <img src="{{ url_for('static', filename='images/' + produkt.image) }}" alt="{{ produkt.name }}">
+                <img src="{{ url_for('static', filename='images/produkty/' + produkt.image) }}" alt="{{ produkt.name }}">
                 <h2>{{ produkt.name }}</h2>
                 <p>{{ produkt.description }}</p>
                 <div class="stock-info">

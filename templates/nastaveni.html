@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Nastavení účtu - xByte{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Nastavení účtu</h1>
+    
+    <div class="account-section">
+        <h2>Změna hesla</h2>
+        
+        <form method="post" action="{{ url_for('nastaveni') }}">
+            <div class="form-group">
+                <label for="stare_heslo">Stávající heslo</label>
+                <input type="password" id="stare_heslo" name="stare_heslo" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="nove_heslo">Nové heslo</label>
+                <input type="password" id="nove_heslo" name="nove_heslo" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="potvrzeni_hesla">Potvrzení nového hesla</label>
+                <input type="password" id="potvrzeni_hesla" name="potvrzeni_hesla" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Změnit heslo</button>
+        </form>
+    </div>
+    
+    <div class="account-section">
+        <h2>Informace o účtu</h2>
+        
+        <div class="account-info">
+            <p><strong>Uživatelské jméno:</strong> {{ session.username }}</p>
+            <p><strong>E-mail:</strong> {{ session.email }}</p>
+            <p><strong>Jméno:</strong> {{ session.firstname }} {{ session.lastname }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

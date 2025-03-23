@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Moje objednávky - xByte{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Moje objednávky</h1>
+    
+    {% if objednavky %}
+        <div class="objednavky-list">
+            {% for obj in objednavky %}
+                <div class="objednavka-container">
+                    <div class="objednavka-header">
+                        <h3>Objednávka #{{ obj.id }}</h3>
+                        <div class="objednavka-meta">
+                            <span class="objednavka-date">{{ obj.datum_objednavky.strftime('%d.%m.%Y %H:%M') }}</span>
+                            <span class="objednavka-price">{{ obj.celkova_cena }} Kč</span>
+                        </div>
+                    </div>
+                    
+                    <div class="objednavka-items">
+                        {% for polozka in obj.polozky %}
+                            <div class="objednavka-item">
+                                {% if polozka.image %}
+                                <img src="{{ url_for('static', filename='images/produkty/' + polozka.image) }}" alt="{{ polozka.name }}" class="item-image">
+                                {% endif %}
+                                <div class="item-details">
+                                    <div class="item-name">{{ polozka.name }}</div>
+                                    <div class="item-price">{{ polozka.cena_za_kus }} Kč × {{ polozka.mnozstvi }} ks</div>
+                                    <div class="item-total">{{ polozka.cena_za_kus * polozka.mnozstvi }} Kč</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-objednavky">
+            <p>Nemáte žádné objednávky.</p>
+            <a href="{{ url_for('produkty') }}" class="btn">Prohlédnout produkty</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
