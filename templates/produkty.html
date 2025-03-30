@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
+{% block title %}Produkty | xByte{% endblock %}
+
 {% block content %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/produkty.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     
     <div class="product-container">
@@ -70,10 +71,42 @@
                     // Aktualizace zobrazení košíku v navigaci
                     updateCartDisplay();
                     
-                    // Oznámení uživateli
-                    alert('Produkt byl přidán do košíku!');
+                    // Zobrazíme uživatelsky přívětivou notifikaci nahoře
+                    showNotification('Produkt byl přidán do košíku!');
                 });
             });
+            
+            // Funkce pro zobrazení vlastní notifikace - aktualizovaná
+            function showNotification(message) {
+                // Odstranění existující notifikace, pokud existuje
+                const existingNotification = document.querySelector('.notification');
+                if (existingNotification) {
+                    existingNotification.remove();
+                }
+                
+                // Vytvoření notifikačního elementu
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.textContent = message;
+                
+                // Přidání do stránky
+                document.body.appendChild(notification);
+                
+                // Zobrazení notifikace (s malým zpožděním pro animaci)
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 10);
+                
+                // Automatické zmizení po 3 sekundách
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    
+                    // Odstranění ze stránky po dokončení animace
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            }
         });
     </script>
 {% endblock %}

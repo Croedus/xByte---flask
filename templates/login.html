@@ -4,13 +4,7 @@
 
 {% block content %}
 <div class="login-form">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+    <!-- Odstraníme blok s vykreslováním flash zpráv, protože už jsou zobrazeny v base.html -->
     
     <form action="{{ url_for('login') }}" method="post">
         <h1>Přihlášení</h1>

@@ -71,75 +71,307 @@
             } else {
                 // Výpočet celkové ceny
                 let totalPrice = 0;
-                let cartItemsHTML = '';
                 
-                cart.forEach(item => {
-                    const itemTotal = item.price * item.quantity;
-                    totalPrice += itemTotal;
-                    
-                    cartItemsHTML += `
-                        <div class="cart-item" data-id="${item.id}">
-                            <img src="{{ url_for('static', filename='images/produkty/') }}${item.image}" alt="${item.name}">
-                            <div class="cart-item-details">
-                                <h3>${item.name}</h3>
-                                <p>${item.price} Kč × ${item.quantity} = ${itemTotal} Kč</p>
-                                <div class="quantity-controls">
-                                    <button class="quantity-btn decrease-btn" data-id="${item.id}">-</button>
-                                    <input type="number" value="${item.quantity}" min="1" max="99" class="quantity-input" data-id="${item.id}">
-                                    <button class="quantity-btn increase-btn" data-id="${item.id}">+</button>
-                                </div>
-                            </div>
-                            <button class="remove-btn" data-id="${item.id}">Odstranit</button>
-                        </div>
-                    `;
-                });
-                
-                // Vykreslení košíku s položkami a souhrnem
-                cartContainer.innerHTML = `
-                    <div class="cart-items">
-                        ${cartItemsHTML}
-                    </div>
-                    
-                    <div class="cart-summary">
-                        <h3>Souhrn objednávky</h3>
-                        <div class="summary-row">
-                            <span>Mezisoučet:</span>
-                            <span>${totalPrice} Kč</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Doprava:</span>
-                            <span>99 Kč</span>
-                        </div>
-                        <div class="summary-row total">
-                            <span>Celkem:</span>
-                            <span>${totalPrice + 99} Kč</span>
-                        </div>
-                        <button class="checkout-btn">Objednat a zaplatit</button>
+                // Nová struktura položek košíku
+                let cartItemsHTML = `
+                    <div class="cart-items-header">
+                        <div class="cart-header-product">Produkt</div>
+                        <div class="cart-header-stock">Skladem</div>
+                        <div class="cart-header-quantity">Množství</div>
+                        <div class="cart-header-price">Cena/ks</div>
+                        <div class="cart-header-total">Celkem</div>
+                        <div class="cart-header-action"></div>
                     </div>
                 `;
                 
-                // Přidání event listenerů po vykreslení košíku
-                addCartEventListeners();
+                // Pole pro uložení ID produktů, abychom mohli načíst skladové zásoby
+                const productIds = cart.map(item => item.id);
                 
-                // Přidání event listeneru pro tlačítko objednávky
-                const checkoutButton = document.querySelector('.checkout-btn');
-                if (checkoutButton) {
-                    checkoutButton.addEventListener('click', function() {
-                        processOrder(cart, totalPrice + 99);
+                // Načtení skladových zásob
+                fetch('{{ url_for("get_stock_info") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productIds: productIds })
+                })
+                .then(response => response.json())
+                .then(stockData => {
+                    // Pokračovat ve vykreslování s informacemi o skladových zásobách
+                    cart.forEach(item => {
+                        const itemTotal = item.price * item.quantity;
+                        totalPrice += itemTotal;
+                        const stock = stockData[item.id] || 0;
+                        
+                        cartItemsHTML += `
+                            <div class="cart-item" data-id="${item.id}">
+                                <div class="cart-item-product">
+                                    <img src="{{ url_for('static', filename='images/produkty/') }}${item.image}" alt="${item.name}">
+                                    <div class="cart-item-name">${item.name}</div>
+                                </div>
+                                <div class="cart-item-stock">
+                                    <span class="stock-status ${stock < 5 ? 'low-stock' : ''}">${stock} ks</span>
+                                </div>
+                                <div class="cart-item-quantity">
+                                    <div class="quantity-controls">
+                                        <button class="quantity-btn decrease-btn" data-id="${item.id}">-</button>
+                                        <input type="number" value="${item.quantity}" min="1" max="99" class="quantity-input" data-id="${item.id}">
+                                        <button class="quantity-btn increase-btn" data-id="${item.id}">+</button>
+                                    </div>
+                                </div>
+                                <div class="cart-item-price">${item.price} Kč</div>
+                                <div class="cart-item-total">${itemTotal} Kč</div>
+                                <div class="cart-item-action">
+                                    <button class="remove-btn" data-id="${item.id}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
                     });
-                }
+                    
+                    // Výchozí volby dopravy a platby
+                    const shippingOptions = [
+                        { id: 'pickup', name: 'Vyzvednutí na prodejně', price: 0 },
+                        { id: 'delivery', name: 'Doručení na adresu', price: 159 }
+                    ];
+                    
+                    const paymentOptions = [
+                        { id: 'cash', name: 'Hotově/kartou', price: 39 },
+                        { id: 'transfer', name: 'Převodem', price: 0 }
+                    ];
+                    
+                    // Vykreslení košíku s položkami a souhrnem
+                    cartContainer.innerHTML = `
+                        <div class="cart-main-container">
+                            <div class="cart-left-column">
+                                <div class="cart-items">
+                                    ${cartItemsHTML}
+                                </div>
+                                
+                                <div class="shipping-payment-section">
+                                    <h3>Způsob dopravy</h3>
+                                    <div class="shipping-options">
+                                        ${shippingOptions.map(option => `
+                                            <label class="shipping-payment-option">
+                                                <input type="radio" name="shipping" value="${option.id}" 
+                                                    ${option.id === 'pickup' ? 'checked' : ''} 
+                                                    data-price="${option.price}">
+                                                ${option.name} - ${option.price === 0 ? 'zdarma' : option.price + ' Kč'}
+                                            </label>
+                                        `).join('')}
+                                    </div>
+                                    
+                                    <h3>Způsob platby</h3>
+                                    <div class="payment-options">
+                                        ${paymentOptions.map(option => `
+                                            <label class="shipping-payment-option">
+                                                <input type="radio" name="payment" value="${option.id}" 
+                                                    ${option.id === 'transfer' ? 'checked' : ''} 
+                                                    data-price="${option.price}">
+                                                ${option.name} - ${option.price === 0 ? 'zdarma' : option.price + ' Kč'}
+                                            </label>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                
+                                <div class="cart-billing-section">
+                                    <h3>Fakturační údaje</h3>
+                                    <form id="billing-form">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="firstname">Jméno</label>
+                                                <input type="text" id="firstname" name="firstname" readonly>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="lastname">Příjmení</label>
+                                                <input type="text" id="lastname" name="lastname" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">E-mail</label>
+                                            <input type="email" id="email" name="email" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="phone">Telefon *</label>
+                                            <input type="tel" id="phone" name="phone" required>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="street">Ulice *</label>
+                                                <input type="text" id="street" name="street" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="house_number">Číslo popisné *</label>
+                                                <input type="text" id="house_number" name="house_number" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="city">Město *</label>
+                                                <input type="text" id="city" name="city" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="zip">PSČ *</label>
+                                                <input type="text" id="zip" name="zip" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="country">Země *</label>
+                                            <select id="country" name="country" required>
+                                                <option value="Česká republika">Česká republika</option>
+                                                <option value="Slovensko">Slovensko</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div class="cart-summary">
+                                <h3>Souhrn objednávky</h3>
+                                <div class="summary-row">
+                                    <span>Mezisoučet:</span>
+                                    <span>${totalPrice} Kč</span>
+                                </div>
+                                <div class="summary-row shipping-cost">
+                                    <span>Doprava:</span>
+                                    <span>0 Kč</span>
+                                </div>
+                                <div class="summary-row payment-cost">
+                                    <span>Platba:</span>
+                                    <span>0 Kč</span>
+                                </div>
+                                <div class="summary-row total">
+                                    <span>Celkem:</span>
+                                    <span>${totalPrice} Kč</span>
+                                </div>
+                                <button class="checkout-btn">Objednat a zaplatit</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Načtení údajů přihlášeného uživatele
+                    fetchUserData();
+                    
+                    // Přidání event listenerů po vykreslení košíku
+                    addCartEventListeners();
+                    
+                    // Přidání event listenerů pro dopravu a platbu
+                    document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+                        radio.addEventListener('change', updateOrderSummary);
+                    });
+                    
+                    document.querySelectorAll('input[name="payment"]').forEach(radio => {
+                        radio.addEventListener('change', updateOrderSummary);
+                    });
+                    
+                    // Inicializace souhrnu
+                    updateOrderSummary();
+                    
+                    // Přidání event listeneru pro tlačítko objednávky
+                    const checkoutButton = document.querySelector('.checkout-btn');
+                    if (checkoutButton) {
+                        checkoutButton.addEventListener('click', function() {
+                            // Validace formuláře před zpracováním objednávky
+                            if (validateBillingForm()) {
+                                const shippingOption = document.querySelector('input[name="shipping"]:checked').value;
+                                const paymentOption = document.querySelector('input[name="payment"]:checked').value;
+                                const shippingPrice = parseFloat(document.querySelector('input[name="shipping"]:checked').dataset.price);
+                                const paymentPrice = parseFloat(document.querySelector('input[name="payment"]:checked').dataset.price);
+                                const totalWithFees = totalPrice + shippingPrice + paymentPrice;
+                                
+                                // Získání fakturačních údajů
+                                const billingForm = document.getElementById('billing-form');
+                                const billingData = {
+                                    firstname: billingForm.firstname.value,
+                                    lastname: billingForm.lastname.value,
+                                    email: billingForm.email.value,
+                                    phone: billingForm.phone.value,
+                                    street: billingForm.street.value,
+                                    house_number: billingForm.house_number.value,
+                                    city: billingForm.city.value,
+                                    zip: billingForm.zip.value,
+                                    country: billingForm.country.value
+                                };
+                                
+                                processOrder(cart, totalWithFees, shippingOption, paymentOption, billingData);
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Chyba při načítání informací o skladových zásobách:', error);
+                    // Zobrazit chybovou zprávu a nabídnout možnost zkusit znovu načíst stránku
+                    cartContainer.innerHTML = `
+                        <div class="error-message">
+                            <h2>Došlo k chybě při načítání informací o produktech</h2>
+                            <p>Prosím obnovte stránku a zkuste to znovu</p>
+                            <button onclick="location.reload()">Obnovit stránku</button>
+                        </div>
+                    `;
+                });
             }
         }
         
+        // Funkce pro validaci formuláře fakturačních údajů
+        function validateBillingForm() {
+            const form = document.getElementById('billing-form');
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('error');
+                    isValid = false;
+                } else {
+                    field.classList.remove('error');
+                }
+            });
+            
+            if (!isValid) {
+                alert('Prosím vyplňte všechny povinné údaje označené hvězdičkou (*)');
+            }
+            
+            return isValid;
+        }
+        
+        // Funkce pro načtení údajů přihlášeného uživatele
+        function fetchUserData() {
+            fetch('{{ url_for("get_user_data") }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.authenticated) {
+                        document.getElementById('firstname').value = data.firstname || '';
+                        document.getElementById('lastname').value = data.lastname || '';
+                        document.getElementById('email').value = data.email || '';
+                    }
+                })
+                .catch(error => {
+                    console.error('Chyba při načítání uživatelských dat:', error);
+                });
+        }
+        
+        // Funkce pro aktualizaci souhrnu objednávky
+        function updateOrderSummary() {
+            const shippingPrice = parseFloat(document.querySelector('input[name="shipping"]:checked').dataset.price);
+            const paymentPrice = parseFloat(document.querySelector('input[name="payment"]:checked').dataset.price);
+            const subtotal = parseFloat(document.querySelector('.summary-row span:last-child').textContent.replace(' Kč', ''));
+            const total = subtotal + shippingPrice + paymentPrice;
+            
+            document.querySelector('.shipping-cost span:last-child').textContent = shippingPrice === 0 ? 'zdarma' : shippingPrice + ' Kč';
+            document.querySelector('.payment-cost span:last-child').textContent = paymentPrice === 0 ? 'zdarma' : paymentPrice + ' Kč';
+            document.querySelector('.total span:last-child').textContent = total + ' Kč';
+        }
+        
         // Funkce pro zpracování objednávky
-        function processOrder(cart, totalPrice) {
+        function processOrder(cart, totalPrice, shippingOption, paymentOption, billingData) {
             // Nejprve zkontrolujeme, zda je uživatel přihlášen
             fetch('{{ url_for("check_auth") }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.authenticated) {
                         // Uživatel je přihlášen, zpracujeme objednávku
-                        submitOrder(cart, totalPrice);
+                        submitOrder(cart, totalPrice, shippingOption, paymentOption, billingData);
                     } else {
                         // Uživatel není přihlášen, zobrazíme modal
                         loginModal.style.display = 'flex';
@@ -152,7 +384,7 @@
         }
         
         // Funkce pro odeslání objednávky na server
-        function submitOrder(cart, totalPrice) {
+        function submitOrder(cart, totalPrice, shippingOption, paymentOption, billingData) {
             fetch('{{ url_for("place_order") }}', {
                 method: 'POST',
                 headers: {
@@ -160,7 +392,10 @@
                 },
                 body: JSON.stringify({
                     items: cart,
-                    totalPrice: totalPrice
+                    totalPrice: totalPrice,
+                    shippingOption: shippingOption,
+                    paymentOption: paymentOption,
+                    billingData: billingData
                 })
             })
             .then(response => response.json())

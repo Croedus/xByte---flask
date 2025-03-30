@@ -11,14 +11,52 @@
             {% for obj in objednavky %}
                 <div class="objednavka-container">
                     <div class="objednavka-header">
-                        <h3>Objednávka #{{ obj.id }}</h3>
-                        <div class="objednavka-meta">
-                            <span class="objednavka-date">{{ obj.datum_objednavky.strftime('%d.%m.%Y %H:%M') }}</span>
-                            <span class="objednavka-price">{{ obj.celkova_cena }} Kč</span>
+                        <div class="objednavka-title">
+                            <h3>Objednávka #{{ obj.id }}</h3>
+                            <div class="objednavka-meta">
+                                <span class="objednavka-date">{{ obj.datum_objednavky.strftime('%d.%m.%Y %H:%M') }}</span>
+                                <span class="objednavka-price">{{ obj.celkova_cena }} Kč</span>
+                            </div>
+                        </div>
+                        <button class="cancel-order-btn" data-id="{{ obj.id }}">Zrušit objednávku</button>
+                    </div>
+                    
+                    <div class="objednavka-info">
+                        <div class="objednavka-delivery-payment">
+                            <div class="delivery-info">
+                                <strong>Způsob doručení:</strong> 
+                                <span>
+                                    {% if obj.shipping_option == 'pickup' %}
+                                        Osobní odběr na prodejně
+                                    {% elif obj.shipping_option == 'delivery' %}
+                                        Doručení na adresu
+                                    {% else %}
+                                        {{ obj.shipping_option }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="payment-info">
+                                <strong>Způsob platby:</strong> 
+                                <span>
+                                    {% if obj.payment_option == 'cash' %}
+                                        Hotově/kartou
+                                    {% elif obj.payment_option == 'transfer' %}
+                                        Bankovní převod
+                                    {% else %}
+                                        {{ obj.payment_option }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="objednavka-address">
+                            <strong>Doručovací adresa:</strong>
+                            <span>{{ obj.ulice }} {{ obj.cislo_popisne }}, {{ obj.psc }} {{ obj.mesto }}, {{ obj.zeme }}</span>
                         </div>
                     </div>
                     
                     <div class="objednavka-items">
+                        <h4>Objednané položky</h4>
                         {% for polozka in obj.polozky %}
                             <div class="objednavka-item">
                                 {% if polozka.image %}
@@ -35,6 +73,20 @@
                 </div>
             {% endfor %}
         </div>
+
+        <!-- Modální okno pro potvrzení zrušení objednávky -->
+        <div id="cancel-confirmation-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Potvrzení zrušení objednávky</h2>
+                <p>Opravdu chcete zrušit objednávku #<span id="cancel-order-id"></span>?</p>
+                <p>Tato akce je nevratná.</p>
+                <div class="modal-buttons">
+                    <button id="confirm-cancel" class="btn-danger">Ano, zrušit objednávku</button>
+                    <button id="cancel-action" class="btn">Ne, ponechat objednávku</button>
+                </div>
+            </div>
+        </div>
     {% else %}
         <div class="empty-objednavky">
             <p>Nemáte žádné objednávky.</p>
@@ -42,4 +94,109 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cancelButtons = document.querySelectorAll('.cancel-order-btn');
+        const modal = document.getElementById('cancel-confirmation-modal');
+        const closeModalBtn = document.querySelector('.close-modal');
+        const confirmCancelBtn = document.getElementById('confirm-cancel');
+        const cancelActionBtn = document.getElementById('cancel-action');
+        const orderIdSpan = document.getElementById('cancel-order-id');
+        let currentOrderId = null;
+
+        // Otevření modálního okna po kliknutí na tlačítko "Zrušit objednávku"
+        cancelButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                currentOrderId = this.getAttribute('data-id');
+                orderIdSpan.textContent = currentOrderId;
+                modal.style.display = 'flex';
+            });
+        });
+
+        // Zavření modálního okna
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        }
+
+        // Zavření modálního okna po kliknutí na "Ne, ponechat objednávku"
+        if (cancelActionBtn) {
+            cancelActionBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        }
+
+        // Potvrzení zrušení objednávky
+        if (confirmCancelBtn) {
+            confirmCancelBtn.addEventListener('click', function() {
+                if (currentOrderId) {
+                    // Odeslání požadavku na zrušení objednávky
+                    fetch('/cancel_order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ orderId: currentOrderId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Úspěšné zrušení - obnovíme stránku
+                            showNotification('Objednávka byla úspěšně zrušena', 'success');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            // Chyba při zrušení
+                            showNotification('Objednávku nelze zrušit: ' + data.message, 'error');
+                            modal.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Chyba při zrušení objednávky:', error);
+                        showNotification('Došlo k chybě při zrušení objednávky', 'error');
+                        modal.style.display = 'none';
+                    });
+                }
+            });
+        }
+
+        // Funkce pro zobrazení notifikace
+        function showNotification(message, type = '') {
+            // Odstranění existující notifikace, pokud existuje
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Vytvoření notifikačního elementu
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            if (type) {
+                notification.classList.add(type);
+            }
+            notification.textContent = message;
+            
+            // Přidání do stránky
+            document.body.appendChild(notification);
+            
+            // Zobrazení notifikace (s malým zpožděním pro animaci)
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Automatické zmizení po 3 sekundách
+            setTimeout(() => {
+                notification.classList.remove('show');
+                
+                // Odstranění ze stránky po dokončení animace
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+    });
+</script>
 {% endblock %}
