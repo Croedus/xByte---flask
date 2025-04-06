@@ -177,7 +177,7 @@
                                 
                                 <div class="cart-billing-section">
                                     <h3>Fakturační údaje</h3>
-                                    <form id="billing-form">
+                                    <form id="billing-form" novalidate>
                                         <div class="form-row">
                                             <div class="form-group">
                                                 <label for="firstname">Jméno</label>
@@ -195,6 +195,7 @@
                                         <div class="form-group">
                                             <label for="phone">Telefon *</label>
                                             <input type="tel" id="phone" name="phone" required>
+                                            <div id="phone-error" class="validation-message" style="display: none;">Nebyl dodržen formát telefonního čísla. Zadejte buď 9 číslic, nebo +předvolba (max. 3 číslice) a 9 číslic.</div>
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group">
@@ -265,13 +266,22 @@
                         radio.addEventListener('change', updateOrderSummary);
                     });
                     
+                    // Přidání validace telefonu při ztrátě fokusu
+                    const phoneInput = document.getElementById('phone');
+                    phoneInput.addEventListener('blur', function() {
+                        validatePhone(this);
+                    });
+                    
                     // Inicializace souhrnu
                     updateOrderSummary();
                     
                     // Přidání event listeneru pro tlačítko objednávky
                     const checkoutButton = document.querySelector('.checkout-btn');
                     if (checkoutButton) {
-                        checkoutButton.addEventListener('click', function() {
+                        checkoutButton.addEventListener('click', function(e) {
+                            // Zabráníme výchozímu chování
+                            e.preventDefault();
+                            
                             // Validace formuláře před zpracováním objednávky
                             if (validateBillingForm()) {
                                 const shippingOption = document.querySelector('input[name="shipping"]:checked').value;
@@ -313,6 +323,44 @@
             }
         }
         
+        // Funkce pro validaci telefonního čísla
+        function validatePhone(phoneInput) {
+            const phoneValue = phoneInput.value.trim();
+            const phoneErrorElement = document.getElementById('phone-error');
+            let isValidPhone = false;
+            
+            if (phoneValue.startsWith('+')) {
+                // S předvolbou: +XXX XXXXXXXXX
+                const withoutPlus = phoneValue.substring(1); // odstraníme +
+                const digits = withoutPlus.replace(/\D/g, ''); // jen číslice
+                
+                // Ujistíme se, že máme předvolbu (max 3 číslice) + 9 číslic telefonu
+                if (digits.length >= 9 + 1 && digits.length <= 9 + 3) {
+                    isValidPhone = true;
+                }
+            } else {
+                // Bez předvolby: očekáváme přesně 9 číslic
+                const digits = phoneValue.replace(/\D/g, '');
+                if (digits.length === 9) {
+                    isValidPhone = true;
+                }
+            }
+            
+            if (!isValidPhone && phoneValue !== '') {
+                phoneInput.classList.add('error');
+                if (phoneErrorElement) {
+                    phoneErrorElement.style.display = 'block';
+                }
+                return false;
+            } else {
+                phoneInput.classList.remove('error');
+                if (phoneErrorElement) {
+                    phoneErrorElement.style.display = 'none';
+                }
+                return true;
+            }
+        }
+        
         // Funkce pro validaci formuláře fakturačních údajů
         function validateBillingForm() {
             const form = document.getElementById('billing-form');
@@ -328,8 +376,10 @@
                 }
             });
             
-            if (!isValid) {
-                alert('Prosím vyplňte všechny povinné údaje označené hvězdičkou (*)');
+            // Validace telefonního čísla
+            const phoneInput = document.getElementById('phone');
+            if (!validatePhone(phoneInput)) {
+                isValid = false;
             }
             
             return isValid;

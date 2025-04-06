@@ -1,45 +1,50 @@
 /* Optimalizovaný CSS soubor - opravené zarovnání a rozložení prvků */
 
-/* Základní reset a nastavení */
+/* === ZÁKLADNÍ RESET A NASTAVENÍ === */
+/* Box-sizing zajistí, že padding a border se započítávají do celkové šířky/výšky elementu */
 * {
     box-sizing: border-box;
 }
 
+/* Resetování základních stylů pro HTML a BODY elementy */
 html, body {
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
+    overflow-x: hidden; /* Zabránění horizontálnímu scrollování */
     max-width: 100%;
     width: 100%;
 }
 
+/* Základní styl pro celý dokument */
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, sans-serif; /* Základní bezpatkové písmo */
     color: black;
-    background-image: url('../images/pozadi.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    min-height: 100vh;
+    background-image: url('../images/pozadi.jpg'); /* Obrázek na pozadí */
+    background-size: cover; /* Obrázek pokryje celé pozadí */
+    background-position: center; /* Centrování obrázku */
+    background-attachment: fixed; /* Fixní pozadí při scrollování */
+    min-height: 100vh; /* Minimální výška 100% výšky viewportu */
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Sloupcové rozložení pro lepší správu footer */
     text-align: center; /* Zarovnání textu na střed */
 }
 
-/* Hlavní kontejner (push footer down) */
+/* Hlavní kontejner - využívá flex-grow pro vyplnění prostoru (push footer down) */
 main {
-    flex: 1;
+    flex: 1; /* Vyplní dostupný prostor mezi header a footer */
     background-color: transparent; /* Explicitně transparentní pozadí */
 }
 
-/* Společné kontejnery */
+/* === SPOLEČNÉ KONTEJNERY === */
+/* Základní kontejnery pro obsah stránek */
 .container, .index-container {
-    max-width: 1200px;
-    margin: 40px auto;
+    max-width: 1200px; /* Maximální šířka obsahu */
+    margin: 40px auto; /* Centrování a vertikální mezery */
     padding: 20px;
     text-align: center; /* Zarovnání obsahu na střed */
 }
 
+/* Stylování nadpisů stránek */
 .page-title {
     text-align: center;
     margin-bottom: 30px;
@@ -47,23 +52,25 @@ main {
     color: #333;
 }
 
-/* ========== HEADER A NAVIGACE ========== */
+/* === HEADER A NAVIGACE === */
 header {
-    background-color: #EBE8E0;
+    background-color: #EBE8E0; /* Světlá barva pozadí */
     width: 100%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: sticky;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Stín pro vizuální oddělení */
+    position: sticky; /* Přilepení k hornímu okraji při scrollování */
     top: 0;
-    z-index: 1000;
+    z-index: 1000; /* Zajištění, že header bude nad ostatním obsahem */
 }
 
+/* Navigační panel */
 header nav {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Rozdělení navigace na levou a pravou část */
     align-items: center;
     padding: 0 20px;
 }
 
+/* Obecné nastavení pro seznamy v navigaci */
 header ul {
     list-style-type: none;
     margin: 0;
@@ -72,30 +79,36 @@ header ul {
     align-items: center;
 }
 
+/* Levá část navigace (logo a hlavní odkazy) */
 .nav-left {
     justify-content: flex-start;
 }
 
+/* Pravá část navigace (košík, přihlášení) */
 .nav-right {
     justify-content: flex-end;
 }
 
+/* Kontejner pro logo */
 .nav-left .logo-item {
     display: flex;
     align-items: center;
     margin-right: 10px;
 }
 
+/* Styl pro logo */
 .nav-logo {
     height: 100px;
     width: auto;
     vertical-align: middle;
 }
 
+/* Položky v navigaci */
 header ul li {
     display: inline;
 }
 
+/* Odkazy v navigaci */
 header ul li a {
     display: block;
     padding: 15px 10px;
@@ -104,14 +117,15 @@ header ul li a {
     font-size: 16px;
 }
 
+/* Efekt hover a aktivní položky v navigaci */
 header ul li a:hover,
 header ul li a.active {
-    background-color: #4cc1f0;
+    background-color: #4cc1f0; /* Modrá barva při najetí nebo aktivní položce */
     color: white;
     border-radius: 5px;
 }
 
-/* Ikona košíku */
+/* === IKONA KOŠÍKU === */
 .cart-icon a {
     display: flex;
     align-items: center;
@@ -123,6 +137,7 @@ header ul li a.active {
     display: inline-block;
 }
 
+/* Badge pro zobrazení počtu položek v košíku */
 .cart-badge {
     position: absolute;
     top: -5px;
@@ -139,7 +154,7 @@ header ul li a.active {
     font-weight: bold;
 }
 
-/* Ikona přihlášení */
+/* === IKONA PŘIHLÁŠENÍ === */
 .login-icon a {
     display: flex;
     flex-direction: column;
@@ -157,13 +172,14 @@ header ul li a.active {
     color: #666;
 }
 
-/* ========== ÚVODNÍ STRÁNKA ========== */
+/* === ÚVODNÍ STRÁNKA === */
+/* Úvodní sekce s velkým obrázkem na pozadí */
 .index-intro {
     background-image: url('../images/reklama.webp');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    height: 100vh;
+    height: 100vh; /* Výška celého viewportu */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -171,26 +187,29 @@ header ul li a.active {
     color: white;
 }
 
+/* Kontejner pro text v úvodní sekci */
 .index-intro-text {
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.6); /* Částečně průhledné černé pozadí */
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* Nadpis v úvodní sekci */
 .index-intro-text h1 {
     font-size: 3rem;
     margin-bottom: 10px;
     font-weight: bold;
 }
 
+/* Podnadpis v úvodní sekci */
 .index-intro-text p {
     font-size: 1.5rem;
     margin-top: 0;
     font-style: italic;
 }
 
-/* Sekce s informacemi o funkcích */
+/* === SEKCE S INFORMACEMI O FUNKCÍCH === */
 .index-features {
     display: flex;
     justify-content: space-around;
@@ -199,6 +218,7 @@ header ul li a.active {
     margin-bottom: 60px; /* Větší odstup od patičky */
 }
 
+/* Karta s funkcí na úvodní stránce */
 .index-feature-card {
     background-color: #ffffff;
     color: #333;
@@ -206,7 +226,7 @@ header ul li a.active {
     width: 30%;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease; /* Efekt pro hover */
     text-align: center; /* Explicitní zarovnání na střed */
 }
 
@@ -219,12 +239,13 @@ header ul li a.active {
     font-size: 1rem;
 }
 
+/* Hover efekt pro karty funkcí */
 .index-feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px); /* Mírné posunutí nahoru */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Zvýraznění stínu */
 }
 
-/* ========== PRODUKTY ========== */
+/* === PRODUKTY === */
 .product-container {
     max-width: 1200px;
     margin: 40px auto 80px; /* Zvětšený spodní odstup */
@@ -232,56 +253,62 @@ header ul li a.active {
     text-align: center;
 }
 
+/* Grid rozložení pro produkty */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Upravená šířka buňky */
-    gap: 30px; /* Zvětšená mezera mezi produkty */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsivní mřížka */
+    gap: 30px; /* Mezera mezi produkty */
     justify-items: center;
     padding: 0 20px;
     margin-bottom: 60px; /* Větší odstup od patičky */
 }
 
+/* Karta produktu */
 .product-card {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Efekty pro hover */
     width: 100%;
     max-width: 300px;
     display: flex;
     flex-direction: column;
 }
 
+/* Obrázek produktu */
 .product-card img {
     width: 100%;
     height: 200px;
     border-radius: 10px;
-    object-fit: contain;
+    object-fit: contain; /* Zachování poměru stran */
     background-color: #f9f9f9;
     display: block;
     margin: 0 auto 15px;
 }
 
+/* Nadpis produktu */
 .product-card h2 {
     font-size: 1.8rem;
     margin-top: 15px;
     color: #333;
 }
 
+/* Popis produktu */
 .product-card p {
     font-size: 1rem;
     margin: 10px 0;
     color: #555;
 }
 
+/* Hover efekt pro karty produktů */
 .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px); /* Mírné posunutí nahoru */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Zvýraznění stínu */
 }
 
-/* Stock info - počet kusů skladem */
+/* === INFO O SKLADOVÝCH ZÁSOBÁCH === */
 .stock-info {
     display: flex;
     align-items: center;
@@ -297,26 +324,27 @@ header ul li a.active {
 
 .stock-count {
     font-weight: bold;
-    color: #4cc1f0;
+    color: #4cc1f0; /* Modrá barva pro zdůraznění */
     margin: 0 4px;
 }
 
-/* Tlačítko - Do košíku a cena */
+/* === TLAČÍTKO A CENA PRODUKTU === */
 .product-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: auto;
+    margin-top: auto; /* Posune akce na konec karty */
     padding-top: 20px;
 }
 
 .price {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #0055a4;
+    color: #0055a4; /* Tmavší modrá pro cenu */
 }
 
-/* ========== TLAČÍTKA ========== */
+/* === TLAČÍTKA === */
+/* Základní styly pro všechna tlačítka */
 .btn, .add-to-cart-button, .btn-primary, .checkout-btn, .continue-shopping-btn {
     padding: 10px 15px;
     color: white;
@@ -330,34 +358,39 @@ header ul li a.active {
     text-align: center;
 }
 
+/* Standardní a přidat do košíku tlačítka */
 .add-to-cart-button, .btn {
-    background-color: #4cc1f0;
+    background-color: #4cc1f0; /* Hlavní modrá barva */
 }
 
+/* Primární tlačítko */
 .btn-primary {
-    background-color: #007bff;
+    background-color: #007bff; /* Výraznější modrá */
 }
 
+/* Tlačítko pro checkout */
 .checkout-btn {
     width: 100%;
     background: #4cc1f0;
     margin-top: 20px;
 }
 
+/* Tlačítko pro pokračování v nákupu */
 .continue-shopping-btn {
     background: #4cc1f0;
     margin-top: 20px;
 }
 
+/* Hover efekty pro tlačítka */
 .add-to-cart-button:hover, .btn:hover, .checkout-btn:hover, .continue-shopping-btn:hover {
-    background-color: #333;
+    background-color: #333; /* Tmavší barva při najetí myší */
 }
 
 .btn-primary:hover {
-    background-color: #0069d9;
+    background-color: #0069d9; /* Tmavější modrá při najetí */
 }
 
-/* ========== FORMULÁŘE ========== */
+/* === FORMULÁŘE === */
 form {
     max-width: 600px;
     margin: 20px auto;
@@ -374,6 +407,7 @@ form h1 {
     text-align: center; /* Nadpisy formulářů zůstávají na středu */
 }
 
+/* Vstupní pole, textarey a select boxy */
 form input, form textarea, form select {
     width: 100%;
     padding: 10px;
@@ -383,6 +417,7 @@ form input, form textarea, form select {
     border-radius: 5px;
 }
 
+/* Skupina ve formuláři */
 .form-group {
     margin-bottom: 15px;
 }
@@ -394,6 +429,7 @@ form input, form textarea, form select {
     color: #555;
 }
 
+/* Řádek ve formuláři (obsahuje více skupin vedle sebe) */
 .form-row {
     display: flex;
     gap: 15px;
@@ -405,25 +441,25 @@ form input, form textarea, form select {
     margin-bottom: 0;
 }
 
-/* Chybové stavy pro formulář */
+/* === CHYBOVÉ STAVY FORMULÁŘE === */
 input.error, select.error {
-    border: 1px solid #f44336;
-    background-color: #fff8f8;
+    border: 1px solid #f44336; /* Červený okraj */
+    background-color: #fff8f8; /* Mírně červené pozadí */
 }
 
 .validation-message {
-    color: #f44336;
+    color: #f44336; /* Červený text */
     font-size: 0.8em;
     margin-top: 5px;
 }
 
-/* ========== PŘIHLAŠOVACÍ FORMULÁŘ ========== */
+/* === PŘIHLAŠOVACÍ FORMULÁŘ === */
 .login-form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 70vh;
+    min-height: 70vh; /* Minimální výška pro centrování */
     padding: 20px;
     /* Odstraněno neprůhledné pozadí - nyní bude vidět pozadí stránky */
     background-color: transparent;
@@ -468,6 +504,7 @@ input.error, select.error {
     transition: all 0.3s ease;
 }
 
+/* Efekty pro vstupní pole při hover a focus */
 .login-form input:hover, 
 .login-form input:focus {
     background-color: #E8F5F5;
@@ -475,6 +512,7 @@ input.error, select.error {
     box-shadow: 0 0 0 2px rgba(76, 193, 240, 0.1);
 }
 
+/* Odkazy ve formuláři */
 .login-form .form-links {
     display: flex;
     flex-direction: column;
@@ -495,7 +533,7 @@ input.error, select.error {
     text-decoration: underline;
 }
 
-/* ========== KOŠÍK ========== */
+/* === KOŠÍK === */
 .cart-main-container {
     display: flex;
     flex-wrap: wrap;
@@ -505,11 +543,13 @@ input.error, select.error {
     text-align: left; /* Obsah košíku zarovnaný vlevo */
 }
 
+/* Levý sloupec s položkami košíku */
 .cart-left-column {
-    flex: 3;
+    flex: 3; /* Poměr šířky mezi sloupci */
     min-width: 300px;
 }
 
+/* Pravý sloupec se souhrnem */
 .cart-summary {
     flex: 1;
     background: white;
@@ -517,11 +557,12 @@ input.error, select.error {
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     align-self: flex-start;
-    position: sticky;
+    position: sticky; /* Přilepení sumáře při scrollování */
     top: 100px;
     min-width: 250px;
 }
 
+/* Kontejnery v košíku */
 .cart-items, .shipping-payment-section, .cart-billing-section {
     background: white;
     border-radius: 8px;
@@ -530,9 +571,10 @@ input.error, select.error {
     margin-bottom: 20px;
 }
 
+/* Záhlaví tabulky položek v košíku */
 .cart-items-header {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 0.5fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 0.5fr; /* Poměry sloupců */
     background-color: #f5f5f5;
     padding: 10px 15px;
     font-weight: bold;
@@ -541,14 +583,16 @@ input.error, select.error {
     text-align: center; /* Záhlaví košíku zarovnané na střed */
 }
 
+/* Položka v košíku */
 .cart-item {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 0.5fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 0.5fr; /* Stejné poměry jako záhlaví */
     align-items: center;
     padding: 15px;
     border-bottom: 1px solid #eee;
 }
 
+/* Informace o produktu v košíku */
 .cart-item-product {
     display: flex;
     align-items: center;
@@ -567,19 +611,21 @@ input.error, select.error {
     font-weight: bold;
 }
 
+/* Informace o skladových zásobách v košíku */
 .cart-item-stock {
     text-align: center;
 }
 
 .stock-status {
-    color: #28a745;
+    color: #28a745; /* Zelená pro dostatečné zásoby */
     font-weight: bold;
 }
 
 .stock-status.low-stock {
-    color: #e74c3c;
+    color: #e74c3c; /* Červená pro nízké zásoby */
 }
 
+/* Kontrolky množství v košíku */
 .cart-item-quantity {
     text-align: center;
 }
@@ -606,6 +652,7 @@ input.error, select.error {
     cursor: pointer;
 }
 
+/* Cena a celková cena v košíku */
 .cart-item-price {
     text-align: center;
     font-weight: bold;
@@ -615,15 +662,16 @@ input.error, select.error {
 .cart-item-total {
     text-align: center;
     font-weight: bold;
-    color: #0055a4;
+    color: #0055a4; /* Modrá barva pro zvýraznění */
 }
 
+/* Akce pro položku v košíku (tlačítko odstranit) */
 .cart-item-action {
     text-align: center;
 }
 
 .remove-btn {
-    background: #ff4d4d;
+    background: #ff4d4d; /* Červená barva */
     color: white;
     border: none;
     padding: 8px 12px;
@@ -631,12 +679,14 @@ input.error, select.error {
     cursor: pointer;
 }
 
+/* Řádky v souhrnu objednávky */
 .summary-row {
     display: flex;
     justify-content: space-between;
     margin: 15px 0;
 }
 
+/* Speciální řádky v souhrnu */
 .summary-row.shipping-cost,
 .summary-row.payment-cost {
     border-top: 1px solid #eee;
@@ -652,6 +702,7 @@ input.error, select.error {
     padding-top: 15px;
 }
 
+/* Prázdný košík */
 .empty-cart, .empty-objednavky {
     width: 100%;
     background: white;
@@ -667,7 +718,7 @@ input.error, select.error {
     margin-bottom: 20px;
 }
 
-/* Doprava a platba */
+/* === DOPRAVA A PLATBA === */
 .shipping-payment-section {
     margin-bottom: 20px;
     padding: 15px;
@@ -687,6 +738,7 @@ input.error, select.error {
     margin-bottom: 15px;
 }
 
+/* Jednotlivé možnosti dopravy/platby */
 .shipping-payment-option {
     display: block;
     padding: 10px 15px;
@@ -705,10 +757,10 @@ input.error, select.error {
 
 .shipping-payment-option input[type="radio"] {
     margin-right: 10px;
-    accent-color: #4cc1f0;
+    accent-color: #4cc1f0; /* Barva radio buttonů */
 }
 
-/* ========== FLASH ZPRÁVY A NOTIFIKACE ========== */
+/* === FLASH ZPRÁVY A NOTIFIKACE === */
 .flash-messages {
     position: fixed;
     top: 20px;
@@ -719,78 +771,87 @@ input.error, select.error {
     max-width: 600px;
 }
 
+/* Obecné styly pro zprávy a alerty */
 .flash-message, .alert {
     padding: 15px;
     margin-bottom: 10px;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    animation: fadeIn 0.5s;
+    animation: fadeIn 0.5s; /* Animace při zobrazení */
     text-align: center;
 }
 
+/* Základní flash zpráva (úspěch) */
 .flash-message {
-    background-color: #4CAF50;
+    background-color: #4CAF50; /* Zelená */
     color: white;
 }
 
+/* Chybové zprávy */
 .flash-message.error, .flash-message.alert-error, .flash-message.alert-danger, .alert-error, .alert-danger {
-    background-color: #f44336;
+    background-color: #f44336; /* Červená */
     color: white;
 }
 
+/* Varovné zprávy */
 .flash-message.warning {
-    background-color: #ff9800;
+    background-color: #ff9800; /* Oranžová */
     color: white;
 }
 
+/* Informační zprávy */
 .flash-message.info, .flash-message.alert-info, .alert-info {
-    background-color: #2196F3;
+    background-color: #2196F3; /* Modrá */
     color: white;
 }
 
+/* Zprávy o úspěchu */
 .flash-message.alert-success, .alert-success {
-    background-color: #4CAF50;
+    background-color: #4CAF50; /* Zelená */
     color: white;
 }
 
-/* Vlastní notifikace pro přidání do košíku - umístěná nahoře stejně jako flash zprávy */
+/* Vlastní notifikace pro přidání do košíku */
 .notification {
     position: fixed;
     top: 20px;
     left: 50%;
-    transform: translateX(-50%) translateY(-20px);
+    transform: translateX(-50%) translateY(-20px); /* Výchozí pozice pro animaci */
     background-color: #4cc1f0;
     color: white;
     padding: 15px 20px;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     z-index: 1001;
-    opacity: 0;
+    opacity: 0; /* Výchozí neviditelná */
     text-align: center;
     width: 80%;
     max-width: 600px;
-    transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.3s, transform 0.3s; /* Plynulá animace */
 }
 
+/* Třída pro zobrazení notifikace */
 .notification.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
 }
 
+/* Varianty notifikací */
 .notification.success {
-    background-color: #4CAF50;
+    background-color: #4CAF50; /* Zelená */
 }
 
 .notification.error {
-    background-color: #f44336;
+    background-color: #f44336; /* Červená */
 }
 
+/* Animace pro fade in efekt */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========== MODÁLNÍ OKNA ========== */
+/* === MODÁLNÍ OKNA === */
 .modal {
     display: none;
     position: fixed;
@@ -798,7 +859,7 @@ input.error, select.error {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.7); /* Částečně průhledné černé pozadí */
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -814,6 +875,7 @@ input.error, select.error {
     text-align: center; /* Zarovnání obsahu modálů na střed */
 }
 
+/* Tlačítko pro zavření modálního okna */
 .close-modal {
     position: absolute;
     top: 10px;
@@ -822,6 +884,7 @@ input.error, select.error {
     cursor: pointer;
 }
 
+/* Kontejner pro tlačítka v modálním okně */
 .modal-buttons {
     display: flex;
     justify-content: center;
@@ -829,6 +892,7 @@ input.error, select.error {
     margin-top: 20px;
 }
 
+/* Tlačítka v modálním okně */
 .login-btn, .register-btn, .continue-btn {
     padding: 10px 20px;
     background-color: #007bff;
@@ -842,7 +906,7 @@ input.error, select.error {
     background-color: #0056b3;
 }
 
-/* ========== OBJEDNÁVKY ========== */
+/* === OBJEDNÁVKY === */
 .objednavky-list {
     display: flex;
     flex-direction: column;
@@ -859,7 +923,7 @@ input.error, select.error {
     background-color: #fff;
 }
 
-/* Upravená hlavička objednávky */
+/* Hlavička objednávky */
 .objednavka-header {
     background-color: #f5f5f5;
     padding: 15px;
@@ -871,6 +935,7 @@ input.error, select.error {
 
 .objednavka-title {
     flex: 1;
+    text-align: center;
 }
 
 .objednavka-meta {
@@ -889,7 +954,7 @@ input.error, select.error {
 
 /* Tlačítko pro zrušení objednávky */
 .cancel-order-btn {
-    background-color: #ff4d4d;
+    background-color: #ff4d4d; /* Červená */
     color: white;
     border: none;
     padding: 8px 15px;
@@ -900,7 +965,7 @@ input.error, select.error {
 }
 
 .cancel-order-btn:hover {
-    background-color: #e60000;
+    background-color: #e60000; /* Tmavší červená při najetí */
 }
 
 /* Informace o doručení a platbě */
@@ -924,6 +989,7 @@ input.error, select.error {
     margin-top: 10px;
 }
 
+/* Položky v objednávce */
 .objednavka-items {
     padding: 15px;
     background-color: #fff;
@@ -935,6 +1001,7 @@ input.error, select.error {
     padding-bottom: 5px;
     border-bottom: 1px solid #eee;
     color: #333;
+    text-align: center;
 }
 
 .objednavka-item {
@@ -967,6 +1034,7 @@ input.error, select.error {
 
 .item-name {
     font-weight: bold;
+    text-align: center;
 }
 
 .item-price {
@@ -996,7 +1064,7 @@ input.error, select.error {
     background-color: #e60000;
 }
 
-/* ========== KONTAKT ========== */
+/* === KONTAKT === */
 .header h1, .header p {
     font-size: 2rem;
     margin-bottom: 20px;
@@ -1015,13 +1083,14 @@ input.error, select.error {
     text-align: center;
 }
 
+/* Mapa na stránce kontaktů */
 .map {
     width: 100%;
     height: 400px;
     margin: 20px 0 40px;
 }
 
-/* Zaměstnanci */
+/* === ZAMĚSTNANCI === */
 .employees {
     margin-top: 40px;
     margin-bottom: 60px; /* Větší odstup od patičky */
@@ -1034,6 +1103,7 @@ input.error, select.error {
     justify-content: center;
 }
 
+/* Karta zaměstnance */
 .employee-card {
     background-color: white;
     border: 1px solid #ddd;
@@ -1054,6 +1124,7 @@ input.error, select.error {
     color: #555;
 }
 
+/* Vizitky zaměstnanců */
 .business-cards {
     margin-top: 10px;
 }
@@ -1064,7 +1135,7 @@ input.error, select.error {
     border-radius: 5px;
 }
 
-/* ========== FOOTER ========== */
+/* === FOOTER === */
 .dark-footer {
     background-color: hsl(0, 0%, 100%);
     color: rgb(0, 0, 0);
@@ -1086,6 +1157,7 @@ input.error, select.error {
     margin-bottom: 25px;
 }
 
+/* Kontejner pro informační bloky v patičce */
 .footer-info-container {
     display: flex;
     justify-content: space-around;
@@ -1094,6 +1166,7 @@ input.error, select.error {
     margin-top: 40px;
 }
 
+/* Informační blok v patičce */
 .footer-info {
     background-color: #ffffff;
     color: #333;
@@ -1107,12 +1180,14 @@ input.error, select.error {
     align-items: center;
 }
 
+/* Ikona v informačním bloku */
 .info-icon {
-    color: #4cc1f0;
+    color: #4cc1f0; /* Modrá barva pro ikony */
     font-size: 24px;
     margin-right: 15px;
 }
 
+/* Text v informačním bloku */
 .info-text {
     text-align: left;
 }
@@ -1129,22 +1204,25 @@ input.error, select.error {
     color: #000000;
 }
 
+/* Odkaz v patičce */
 .footer-link {
     text-decoration: none;
     color: inherit;
     display: block;
 }
 
+/* Hover efekt pro odkazy v patičce */
 .footer-link:hover .info-title {
-    color: #4cc1f0;
+    color: #4cc1f0; /* Modrá barva při najetí */
 }
 
+/* Hover efekt pro informační bloky */
 .footer-info:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px); /* Mírné posunutí nahoru */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Zvýraznění stínu */
 }
 
-/* ========== NASTAVENÍ ÚČTU ========== */
+/* === NASTAVENÍ ÚČTU === */
 .account-section {
     background-color: #fff;
     border-radius: 8px;
@@ -1166,7 +1244,7 @@ input.error, select.error {
     text-align: center;
 }
 
-/* Všechna tlačítka ve formulářích */
+/* === TLAČÍTKA VE FORMULÁŘÍCH === */
 form button[type="submit"] {
     display: inline-block;
     background-color: #4cc1f0;
@@ -1183,10 +1261,10 @@ form button[type="submit"] {
 }
 
 form button[type="submit"]:hover {
-    background-color: #333;
+    background-color: #333; /* Tmavší barva při najetí */
 }
 
-/* Specifické úpravy pro kontaktní formulář */
+/* === KONTAKTNÍ FORMULÁŘ === */
 form textarea {
     width: 100%;
     min-height: 150px;
@@ -1196,29 +1274,33 @@ form textarea {
     margin-bottom: 10px;
     font-family: Arial, sans-serif;
     font-size: 1rem;
-    resize: vertical;
+    resize: vertical; /* Umožňuje vertikální změnu velikosti */
 }
 
-/* ========== MEDIA QUERIES ========== */
+/* === RESPONZIVNÍ DESIGN === */
+/* Média query pro tablety a menší desktopy */
 @media (max-width: 992px) {
+    /* Úprava rozložení košíku pro menší obrazovky */
     .cart-items-header, .cart-item {
-        grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr;
+        grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr; /* Skrytí sloupce se skladem */
     }
     
     .cart-header-stock, .cart-item-stock {
-        display: none;
+        display: none; /* Skrytí informací o skladových zásobách */
     }
     
+    /* Méně produktů v řadě na středních obrazovkách */
     .product-grid {
-        grid-template-columns: repeat(3, 1fr); /* Pouze 3 produkty v řadě na středních obrazovkách */
+        grid-template-columns: repeat(3, 1fr); /* Pouze 3 produkty v řadě */
         gap: 20px;
     }
 }
 
+/* Média query pro mobilní zařízení */
 @media (max-width: 768px) {
-    /* Navigace */
+    /* Úprava navigace pro mobilní zařízení */
     header nav {
-        flex-direction: column;
+        flex-direction: column; /* Vertikální uspořádání */
         padding: 10px;
     }
     
@@ -1232,7 +1314,7 @@ form textarea {
         padding: 5px;
     }
     
-    /* Index features */
+    /* Vertikální zobrazení karet na úvodní stránce */
     .index-features {
         flex-direction: column;
         align-items: center;
@@ -1243,17 +1325,18 @@ form textarea {
         margin-bottom: 20px;
     }
     
-    /* Košík */
+    /* Úprava košíku pro mobilní zařízení */
     .cart-main-container {
-        flex-direction: column;
+        flex-direction: column; /* Vertikální uspořádání */
     }
     
     .cart-summary {
-        position: static;
+        position: static; /* Vypnutí sticky pozice */
         width: 100%;
-        order: -1;
+        order: -1; /* Zobrazení souhrnu nad položkami */
     }
     
+    /* Úprava rozložení košíku - skrytí ceny za kus */
     .cart-items-header, .cart-item {
         grid-template-columns: 2fr 1fr 1fr 0.5fr;
     }
@@ -1263,20 +1346,20 @@ form textarea {
     }
     
     .shipping-payment-option {
-        padding: 8px 12px;
+        padding: 8px 12px; /* Menší padding pro mobilní zařízení */
     }
     
-    /* Formuláře */
+    /* Širší flash zprávy na mobilních zařízeních */
     .flash-messages, .alert, .notification {
         width: 90%;
     }
     
-    /* Zaměstnanci */
+    /* Zmenšení karet zaměstnanců */
     .employee-card {
         width: 45%;
     }
     
-    /* Footer */
+    /* Úprava patičky pro mobilní zařízení */
     .footer-info-container {
         flex-direction: column;
         align-items: center;
@@ -1288,15 +1371,15 @@ form textarea {
     }
     
     .info-text {
-        text-align: center;
+        text-align: center; /* Zarovnání textu na střed pro mobilní zobrazení */
     }
     
-    /* Produkty */
+    /* Méně produktů v řadě na tabletech */
     .product-grid {
-        grid-template-columns: repeat(2, 1fr); /* Pouze 2 produkty v řadě na tabletech */
+        grid-template-columns: repeat(2, 1fr); /* Pouze 2 produkty v řadě */
     }
 
-    /* Objednávky - responzivní úpravy */
+    /* Responzivní úpravy pro objednávky */
     .objednavka-header {
         flex-direction: column;
         align-items: flex-start;
@@ -1317,13 +1400,16 @@ form textarea {
     }
 }
 
+/* Média query pro malá mobilní zařízení */
 @media (max-width: 576px) {
+    /* Skrytí hlavičky tabulky košíku na malých zařízeních */
     .cart-items-header {
         display: none;
     }
     
+    /* Vertikální zobrazení položek košíku na malých zařízeních */
     .cart-item {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Jednosloupové rozložení */
         grid-gap: 10px;
         padding: 15px;
         border: 1px solid #eee;
@@ -1335,20 +1421,23 @@ form textarea {
         margin-bottom: 10px;
     }
     
+    /* Úprava zarovnání pro lepší čitelnost na mobilních zařízeních */
     .cart-item-quantity, .cart-item-total, .cart-item-action {
         text-align: left;
     }
     
+    /* Přidání popisku před celkovou cenu */
     .cart-item-total::before {
         content: "Celkem: ";
         font-weight: normal;
     }
     
-    /* Produkty */
+    /* Jeden produkt v řadě na malých mobilních zařízeních */
     .product-grid {
-        grid-template-columns: 1fr; /* Pouze 1 produkt v řadě na mobilech */
+        grid-template-columns: 1fr; /* Pouze 1 produkt v řadě */
     }
     
+    /* Vertikální uspořádání tlačítek a ceny */
     .product-actions {
         flex-direction: column;
         gap: 10px;
@@ -1358,12 +1447,12 @@ form textarea {
         margin-bottom: 10px;
     }
     
-    /* Zaměstnanci */
+    /* Karty zaměstnanců přes celou šířku */
     .employee-card {
         width: 100%;
     }
     
-    /* Formuláře */
+    /* Vertikální rozložení prvků ve formuláři */
     .form-row {
         flex-direction: column;
         gap: 0;

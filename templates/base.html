@@ -1,41 +1,50 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}xByte{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="UTF-8">                                              <!-- Definice znakové sady -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Nastavení viewportu pro responzivní design -->
+    <title>{% block title %}xByte{% endblock %}</title>                 <!-- Dynamický titulek stránky - může být přepsán v dceřiných šablonách -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> <!-- Načtení CSS stylů -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- Načtení Font Awesome ikon -->
 </head>
 <body>
     <header>
         <nav>
             <ul class="nav-left">
+                <!-- Levá část navigace s logem a hlavními odkazy -->
                 <li class="logo-item">
                     <img src="{{ url_for('static', filename='images/xbyte.png') }}" alt="xByte Logo" class="nav-logo">
                 </li>
-                <li><a href="{{ url_for('index') }}">Domů</a></li>
-                <li><a href="{{ url_for('produkty') }}">Produkty</a></li>
-                <li><a href="{{ url_for('kontakt') }}">Kontakt</a></li>
+                <li><a href="{{ url_for('index') }}">Domů</a></li>                <!-- Odkaz na úvodní stránku -->
+                <li><a href="{{ url_for('produkty') }}">Produkty</a></li>          <!-- Odkaz na stránku s produkty -->
+                <li><a href="{{ url_for('kontakt') }}">Kontakt</a></li>            <!-- Odkaz na kontaktní stránku -->
+                
+                <!-- Nový odkaz na administraci -->
+                {% if session.get('username') and session.get('role') == 'admin' %}
+                <li><a href="{{ url_for('admin_dashboard') }}">Administrace</a></li>
+                {% endif %}
             </ul>
             <ul class="nav-right">
+                <!-- Pravá část navigace s košíkem a přihlášením/odhlášením -->
                 <li class="cart-icon">
-                    <a href="{{ url_for('kosik') }}">
+                    <a href="{{ url_for('kosik') }}">                               <!-- Odkaz na košík -->
                         <div class="cart-container">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="cart-badge">0</span>
+                            <i class="fas fa-shopping-cart"></i>                    <!-- Ikona košíku -->
+                            <span class="cart-badge">0</span>                       <!-- Badge s počtem položek v košíku -->
                         </div>
-                        <span>0 Kč</span>
+                        <span>0 Kč</span>                                           <!-- Celková cena položek v košíku -->
                     </a>
                 </li>
                 {% if session.get('username') %}
-                    <li><a href="{{ url_for('moje_objednavky') }}"><i class="fas fa-box"></i> Moje objednávky</a></li>
-                    <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Odhlásit se</a></li>
-                    <li><a href="{{ url_for('nastaveni') }}"><i class="fas fa-cog"></i> Nastavení</a></li>
+                    <!-- Pokud je uživatel přihlášen, zobrazíme jeho možnosti -->
+                    <li><a href="{{ url_for('moje_objednavky') }}"><i class="fas fa-box"></i> Moje objednávky</a></li>    <!-- Odkaz na objednávky -->
+                    <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Odhlásit se</a></li>        <!-- Odkaz na odhlášení -->
+                    <li><a href="{{ url_for('nastaveni') }}"><i class="fas fa-cog"></i> Nastavení</a></li>                <!-- Odkaz na nastavení účtu -->
                 {% else %}
+                    <!-- Pokud uživatel není přihlášen, zobrazíme odkaz na přihlášení -->
                     <li class="login-icon">
                         <a href="{{ url_for('login') }}">
-                            <i class="fas fa-user"></i>
+                            <i class="fas fa-user"></i>                             <!-- Ikona uživatele -->
                             <span>Přihlásit se</span><br>
                             <span class="small-text">Nová registrace</span>
                         </a>
@@ -45,28 +54,31 @@
         </nav>
     </header>
     
-    <!-- Aktualizováno: zobrazení flash zpráv jako překryvných elementů -->
+    <!-- Zobrazení flash zpráv jako překryvných elementů -->
     {% if get_flashed_messages() %}
     <div class="flash-messages">
         {% for category, message in get_flashed_messages(with_categories=true) %}
-            <div class="flash-message {{ category }}">{{ message }}</div>
+            <div class="flash-message {{ category }}">{{ message }}</div>   <!-- Flash zpráva s příslušnou kategorií (success, error, info...) -->
         {% endfor %}
     </div>
     {% endif %}
     
+    <!-- Hlavní obsah stránky - bude naplněn v dceřiných šablonách -->
     <main>
         {% block content %}{% endblock %}
     </main>
     
+    <!-- Patička webu -->
     <footer>
         <div class="dark-footer">
             <div class="footer-content">
                 <div class="footer-heading">Jsme tady pro vás</div>
                 
                 <div class="footer-info-container">
+                    <!-- Informace o telefonním kontaktu -->
                     <div class="footer-info">
                         <div class="info-icon">
-                            <i class="fas fa-phone"></i>
+                            <i class="fas fa-phone"></i>                           <!-- Ikona telefonu -->
                         </div>
                         <div class="info-text">
                             <div class="info-title">+420 604 686 999</div>
@@ -74,9 +86,10 @@
                         </div>
                     </div>
                     
+                    <!-- Informace o kontaktním formuláři -->
                     <div class="footer-info">
                         <div class="info-icon">
-                            <i class="fas fa-comment"></i>
+                            <i class="fas fa-comment"></i>                         <!-- Ikona komentáře -->
                         </div>
                         <div class="info-text">
                             <a href="{{ url_for('kontakt') }}" class="footer-link">
@@ -86,9 +99,10 @@
                         </div>
                     </div>
                     
+                    <!-- Informace o e-mailovém kontaktu -->
                     <div class="footer-info">
                         <div class="info-icon">
-                            <i class="fas fa-envelope"></i>
+                            <i class="fas fa-envelope"></i>                        <!-- Ikona obálky -->
                         </div>
                         <div class="info-text">
                             <a href="mailto:info@xbyte.cz" class="footer-link">
@@ -105,27 +119,27 @@
     <script>
         // Funkce pro aktualizaci počtu položek a celkové ceny v košíku
         function updateCartDisplay() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const cartBadge = document.querySelector('.cart-badge');
-            const cartPrice = document.querySelector('.cart-container + span');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];      // Načtení košíku z localStorage
+            const cartBadge = document.querySelector('.cart-badge');          // Element s počtem položek
+            const cartPrice = document.querySelector('.cart-container + span'); // Element s celkovou cenou
             
             // Výpočet celkového počtu položek a celkové ceny
             let totalItems = 0;
             let totalPrice = 0;
             
             cart.forEach(item => {
-                totalItems += parseInt(item.quantity);
-                totalPrice += parseFloat(item.price) * parseInt(item.quantity);
+                totalItems += parseInt(item.quantity);                        // Přičtení množství položky
+                totalPrice += parseFloat(item.price) * parseInt(item.quantity); // Přičtení ceny položky × množství
             });
             
-            // Aktualizace zobrazení
+            // Aktualizace zobrazení v navigaci
             cartBadge.textContent = totalItems;
             cartPrice.textContent = totalPrice + ' Kč';
         }
 
         // Inicializace košíku, pokud neexistuje
         if (!localStorage.getItem('cart')) {
-            localStorage.setItem('cart', JSON.stringify([]));
+            localStorage.setItem('cart', JSON.stringify([]));                 // Vytvoření prázdného košíku
         }
         
         // Volání funkce při načtení stránky
@@ -133,14 +147,14 @@
             updateCartDisplay();
         });
         
-        // Přidáno: Automatické zmizení flash zpráv po 5 sekundách
+        // Automatické zmizení flash zpráv po 5 sekundách
         setTimeout(function() {
             const flashMessages = document.querySelectorAll('.flash-message');
             flashMessages.forEach(message => {
-                message.style.opacity = '0';
-                message.style.transition = 'opacity 1s';
+                message.style.opacity = '0';                                 // Postupné zprůhlednění
+                message.style.transition = 'opacity 1s';                     // Plynulý přechod
                 setTimeout(() => {
-                    message.style.display = 'none';
+                    message.style.display = 'none';                          // Úplné skrytí po dokončení animace
                 }, 1000);
             });
         }, 5000);
