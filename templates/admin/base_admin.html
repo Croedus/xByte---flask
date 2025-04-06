@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Administrace | xByte{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}"> <!-- Speciální CSS pro admin -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Horní navigační lišta -->
+    <header>
+        <nav>
+            <ul class="nav-left">
+                <li class="logo-item">
+                    <img src="{{ url_for('static', filename='images/xbyte.png') }}" alt="xByte Logo" class="nav-logo">
+                </li>
+                <li><a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint == 'admin_dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+                <li><a href="{{ url_for('admin_produkty') }}" {% if request.endpoint == 'admin_produkty' or request.endpoint == 'admin_novy_produkt' or request.endpoint == 'admin_edit_produkt' %}class="active"{% endif %}>Produkty</a></li>
+                <li><a href="{{ url_for('admin_objednavky') }}" {% if request.endpoint == 'admin_objednavky' or request.endpoint == 'admin_detail_objednavky' %}class="active"{% endif %}>Objednávky</a></li>
+                <li><a href="{{ url_for('admin_uzivatele') }}" {% if request.endpoint == 'admin_uzivatele' or request.endpoint == 'admin_edit_uzivatel' %}class="active"{% endif %}>Uživatelé</a></li>
+                <li><a href="{{ url_for('index') }}">Zpět na web</a></li>
+            </ul>
+            <ul class="nav-right">
+                {% if session.get('username') %}
+                    <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Odhlásit se</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Flash zprávy (notifikace) -->
+    {% if get_flashed_messages() %}
+    <div class="flash-messages">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Hlavní obsah stránky -->
+    <main class="admin-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Skript pro automatické skrytí flash zpráv -->
+    <script>
+        // Automatické skrytí flash zpráv po 5 sekundách
+        setTimeout(function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                message.style.opacity = '0';
+                message.style.transition = 'opacity 1s';
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 1000);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

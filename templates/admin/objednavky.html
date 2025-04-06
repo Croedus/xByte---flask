@@ -1,0 +1,64 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Správa objednávek | Admin xByte{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>Správa objednávek</h1>
+    
+    <!-- Tabulka objednávek -->
+    <div class="admin-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Datum</th>
+                    <th>Zákazník</th>
+                    <th>Celková cena</th>
+                    <th>Doprava</th>
+                    <th>Platba</th>
+                    <th>Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for objednavka in objednavky %}
+                <tr>
+                    <td>{{ objednavka.id }}</td>
+                    <td>{{ objednavka.datum_objednavky.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td>{{ objednavka.username }} ({{ objednavka.email }})</td>
+                    <td>{{ objednavka.celkova_cena }} Kč</td>
+                    <td>
+                        {% if objednavka.shipping_option == 'pickup' %}
+                        Osobní odběr
+                        {% elif objednavka.shipping_option == 'delivery' %}
+                        Doručení na adresu
+                        {% else %}
+                        {{ objednavka.shipping_option }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if objednavka.payment_option == 'cash' %}
+                        Hotově/kartou
+                        {% elif objednavka.payment_option == 'transfer' %}
+                        Převodem
+                        {% else %}
+                        {{ objednavka.payment_option }}
+                        {% endif %}
+                    </td>
+                    <td class="actions">
+                        <a href="{{ url_for('admin_detail_objednavky', objednavka_id=objednavka.id) }}" class="btn-small" title="Zobrazit detail"><i class="fas fa-eye"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Zpráva, když nejsou žádné objednávky -->
+        {% if not objednavky %}
+        <div class="empty-message" style="text-align: center; padding: 20px;">
+            <p>Zatím nebyly vytvořeny žádné objednávky.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

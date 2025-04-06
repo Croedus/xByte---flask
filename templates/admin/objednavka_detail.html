@@ -1,0 +1,119 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Detail objednávky | Admin xByte{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <!-- Hlavička s navigací zpět -->
+    <div class="admin-header">
+        <h1>Detail objednávky #{{ objednavka.id }}</h1>
+        <a href="{{ url_for('admin_objednavky') }}" class="btn"><i class="fas fa-arrow-left"></i> Zpět na seznam</a>
+    </div>
+    
+    <!-- Grid s informacemi o objednávce -->
+    <div class="order-detail-grid">
+        <!-- Informace o objednávce -->
+        <div class="order-info">
+            <h2>Informace o objednávce</h2>
+            <table class="detail-table">
+                <tr>
+                    <th>Datum objednávky:</th>
+                    <td>{{ objednavka.datum_objednavky.strftime('%d.%m.%Y %H:%M') }}</td>
+                </tr>
+                <tr>
+                    <th>Celková cena:</th>
+                    <td>{{ objednavka.celkova_cena }} Kč</td>
+                </tr>
+                <tr>
+                    <th>Způsob dopravy:</th>
+                    <td>
+                        {% if objednavka.shipping_option == 'pickup' %}
+                        Osobní odběr
+                        {% elif objednavka.shipping_option == 'delivery' %}
+                        Doručení na adresu
+                        {% else %}
+                        {{ objednavka.shipping_option }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Způsob platby:</th>
+                    <td>
+                        {% if objednavka.payment_option == 'cash' %}
+                        Hotově/kartou
+                        {% elif objednavka.payment_option == 'transfer' %}
+                        Převodem
+                        {% else %}
+                        {{ objednavka.payment_option }}
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Informace o zákazníkovi -->
+        <div class="customer-info">
+            <h2>Informace o zákazníkovi</h2>
+            <table class="detail-table">
+                <tr>
+                    <th>Jméno:</th>
+                    <td>{{ objednavka.firstname }} {{ objednavka.lastname }}</td>
+                </tr>
+                <tr>
+                    <th>Uživatelské jméno:</th>
+                    <td>{{ objednavka.username }}</td>
+                </tr>
+                <tr>
+                    <th>E-mail:</th>
+                    <td>{{ objednavka.email }}</td>
+                </tr>
+                <tr>
+                    <th>Telefon:</th>
+                    <td>{{ objednavka.telefon }}</td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Doručovací adresa -->
+        <div class="shipping-info">
+            <h2>Doručovací adresa</h2>
+            <p>
+                {{ objednavka.firstname }} {{ objednavka.lastname }}<br>
+                {{ objednavka.ulice }} {{ objednavka.cislo_popisne }}<br>
+                {{ objednavka.psc }} {{ objednavka.mesto }}<br>
+                {{ objednavka.zeme }}
+            </p>
+        </div>
+    </div>
+    
+    <!-- Tabulka položek objednávky -->
+    <div class="order-items">
+        <h2>Položky objednávky</h2>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Produkt</th>
+                    <th>Cena za kus</th>
+                    <th>Množství</th>
+                    <th>Celkem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for polozka in polozky %}
+                <tr>
+                    <td class="product-cell">
+                        {% if polozka.image %}
+                        <img src="{{ url_for('static', filename='images/produkty/' + polozka.image) }}" alt="{{ polozka.name }}" class="admin-thumbnail">
+                        {% endif %}
+                        <span>{{ polozka.name }}</span>
+                    </td>
+                    <td>{{ polozka.cena_za_kus }} Kč</td>
+                    <td>{{ polozka.mnozstvi }} ks</td>
+                    <td>{{ polozka.cena_za_kus * polozka.mnozstvi }} Kč</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

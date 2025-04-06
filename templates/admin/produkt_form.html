@@ -1,0 +1,51 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+    {% if produkt %}Editace produktu{% else %}Nový produkt{% endif %} | Admin xByte
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>{% if produkt %}Editace produktu{% else %}Nový produkt{% endif %}</h1>
+    
+    <form method="POST" class="admin-form">
+        <!-- Název produktu -->
+        <div class="form-group">
+            <label for="name">Název produktu *</label>
+            <input type="text" id="name" name="name" required value="{{ produkt.name if produkt else '' }}">
+        </div>
+        
+        <!-- Popis produktu -->
+        <div class="form-group">
+            <label for="description">Popis</label>
+            <textarea id="description" name="description" rows="5">{{ produkt.description if produkt else '' }}</textarea>
+        </div>
+        
+        <!-- Cena a skladové zásoby -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="price">Cena (Kč) *</label>
+                <input type="number" id="price" name="price" step="0.01" required value="{{ produkt.price if produkt else '' }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="stock">Skladem (ks)</label>
+                <input type="number" id="stock" name="stock" value="{{ produkt.stock if produkt else '0' }}">
+            </div>
+        </div>
+        
+        <!-- Obrázek produktu -->
+        <div class="form-group">
+            <label for="image">Obrázek (název souboru)</label>
+            <input type="text" id="image" name="image" value="{{ produkt.image if produkt else '' }}">
+            <small>Zadejte název souboru včetně přípony, např. "produkt1.jpg"</small>
+        </div>
+        
+        <!-- Tlačítka formuláře -->
+        <div class="form-buttons">
+            <button type="submit" class="btn">{% if produkt %}Uložit změny{% else %}Vytvořit produkt{% endif %}</button>
+            <a href="{{ url_for('admin_produkty') }}" class="btn btn-secondary">Zrušit</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

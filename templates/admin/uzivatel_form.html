@@ -1,0 +1,51 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Editace uživatele | Admin xByte{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>Editace uživatele: {{ uzivatel.username }}</h1>
+    
+    <form method="POST" class="admin-form">
+        <!-- Uživatelské jméno (pouze pro čtení) -->
+        <div class="form-group">
+            <label for="username">Uživatelské jméno</label>
+            <input type="text" id="username" value="{{ uzivatel.username }}" disabled>
+        </div>
+        
+        <!-- E-mail (pouze pro čtení) -->
+        <div class="form-group">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" value="{{ uzivatel.email }}" disabled>
+        </div>
+        
+        <!-- Jméno a příjmení (pouze pro čtení) -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="firstname">Jméno</label>
+                <input type="text" id="firstname" value="{{ uzivatel.firstname }}" disabled>
+            </div>
+            
+            <div class="form-group">
+                <label for="lastname">Příjmení</label>
+                <input type="text" id="lastname" value="{{ uzivatel.lastname }}" disabled>
+            </div>
+        </div>
+        
+        <!-- Výběr role (toto lze upravit) -->
+        <div class="form-group">
+            <label for="role">Role</label>
+            <select id="role" name="role">
+                <option value="user" {% if uzivatel.role == 'user' %}selected{% endif %}>Uživatel</option>
+                <option value="admin" {% if uzivatel.role == 'admin' %}selected{% endif %}>Administrátor</option>
+            </select>
+        </div>
+        
+        <!-- Tlačítka formuláře -->
+        <div class="form-buttons">
+            <button type="submit" class="btn">Uložit změny</button>
+            <a href="{{ url_for('admin_uzivatele') }}" class="btn btn-secondary">Zrušit</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Správa uživatelů | Admin xByte{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>Správa uživatelů</h1>
+    
+    <!-- Tabulka uživatelů -->
+    <div class="admin-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Uživatelské jméno</th>
+                    <th>E-mail</th>
+                    <th>Jméno a příjmení</th>
+                    <th>Registrace</th>
+                    <th>Role</th>
+                    <th>Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for uzivatel in uzivatele %}
+                <tr>
+                    <td>{{ uzivatel.id }}</td>
+                    <td>{{ uzivatel.username }}</td>
+                    <td>{{ uzivatel.email }}</td>
+                    <td>{{ uzivatel.firstname }} {{ uzivatel.lastname }}</td>
+                    <td>{{ uzivatel.registration_date.strftime('%d.%m.%Y') }}</td>
+                    <td>
+                        <!-- Badge s vizuálním rozlišením role -->
+                        <span class="role-badge role-{{ uzivatel.role }}">
+                            {{ uzivatel.role }}
+                        </span>
+                    </td>
+                    <td class="actions">
+                        <a href="{{ url_for('admin_edit_uzivatel', uzivatel_id=uzivatel.id) }}" class="btn-small" title="Upravit"><i class="fas fa-edit"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Zpráva, když nejsou žádní uživatelé -->
+        {% if not uzivatele %}
+        <div class="empty-message" style="text-align: center; padding: 20px;">
+            <p>Nejsou žádní registrovaní uživatelé.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

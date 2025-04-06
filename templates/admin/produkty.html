@@ -1,0 +1,87 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Správa produktů | Admin xByte{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <!-- Hlavička sekce s názvem a tlačítkem pro přidání -->
+    <div class="admin-header">
+        <h1>Správa produktů</h1>
+        <a href="{{ url_for('admin_novy_produkt') }}" class="btn"><i class="fas fa-plus"></i> Přidat nový produkt</a>
+    </div>
+    
+    <!-- Tabulka s produkty -->
+    <div class="admin-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Obrázek</th>
+                    <th>Název</th>
+                    <th>Cena</th>
+                    <th>Skladem</th>
+                    <th>Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produkt in produkty %}
+                <tr>
+                    <td>{{ produkt.id }}</td>
+                    <td>
+                        {% if produkt.image %}
+                        <img src="{{ url_for('static', filename='images/produkty/' + produkt.image) }}" alt="{{ produkt.name }}" class="admin-thumbnail">
+                        {% else %}
+                        <span class="no-image">Bez obrázku</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ produkt.name }}</td>
+                    <td>{{ produkt.price }} Kč</td>
+                    <td>{{ produkt.stock }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('admin_edit_produkt', produkt_id=produkt.id) }}" class="btn-small" title="Upravit"><i class="fas fa-edit"></i></a>
+                        <button onclick="confirmDelete({{ produkt.id }})" class="btn-small btn-danger" title="Smazat"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Modal pro potvrzení smazání -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Potvrzení smazání</h2>
+            <p>Opravdu chcete smazat tento produkt? Tato akce je nevratná.</p>
+            <form id="delete-form" method="POST" action="">
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-danger">Ano, smazat</button>
+                    <button type="button" id="cancel-delete" class="btn">Ne, ponechat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Funkce pro otevření potvrzovacího modalu při mazání produktu
+    function confirmDelete(id) {
+        const modal = document.getElementById('delete-modal');
+        const form = document.getElementById('delete-form');
+        
+        // Nastavení správné URL pro odeslání formuláře
+        form.action = "{{ url_for('admin_delete_produkt', produkt_id=0) }}".replace('0', id);
+        modal.style.display = 'flex';
+        
+        // Zavření modalu po kliknutí na křížek
+        document.querySelector('.close-modal').addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Zavření modalu po kliknutí na tlačítko "Ne, ponechat"
+        document.getElementById('cancel-delete').addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    }
+</script>
+{% endblock %}

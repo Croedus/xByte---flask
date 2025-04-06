@@ -1,0 +1,36 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard | Admin xByte{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>Administrační dashboard</h1>
+    <p>Vítejte v administračním rozhraní e-shopu xByte. Vyberte sekci, kterou chcete spravovat.</p>
+    
+    <div class="admin-cards">
+        <!-- Karta produktů -->
+        <div class="admin-card">
+            <i class="fas fa-box fa-3x"></i>
+            <h2>Produkty</h2>
+            <p>Správa produktů v e-shopu</p>
+            <a href="{{ url_for('admin_produkty') }}" class="btn">Spravovat</a>
+        </div>
+        
+        <!-- Karta objednávek -->
+        <div class="admin-card">
+            <i class="fas fa-shopping-cart fa-3x"></i>
+            <h2>Objednávky</h2>
+            <p>Přehled a správa objednávek</p>
+            <a href="{{ url_for('admin_objednavky') }}" class="btn">Zobrazit</a>
+        </div>
+        
+        <!-- Karta uživatelů -->
+        <div class="admin-card">
+            <i class="fas fa-users fa-3x"></i>
+            <h2>Uživatelé</h2>
+            <p>Správa uživatelských účtů</p>
+            <a href="{{ url_for('admin_uzivatele') }}" class="btn">Spravovat</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
