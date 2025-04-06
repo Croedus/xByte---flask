@@ -6,40 +6,75 @@
 <div class="admin-container">
     <!-- Hlavička sekce s názvem a tlačítkem pro přidání -->
     <div class="admin-header">
+        <!-- Nadpis sekce -->
         <h1>Správa produktů</h1>
-        <a href="{{ url_for('admin_novy_produkt') }}" class="btn"><i class="fas fa-plus"></i> Přidat nový produkt</a>
+        
+        <!-- Tlačítko pro přidání nového produktu -->
+        <a href="{{ url_for('admin_novy_produkt') }}" class="btn">
+            <i class="fas fa-plus"></i> Přidat nový produkt
+        </a>
     </div>
     
-    <!-- Tabulka s produkty -->
+    <!-- Kontejner pro tabulku produktů -->
     <div class="admin-table-container">
+        <!-- Tabulka s produkty -->
         <table class="admin-table">
+            <!-- Záhlaví tabulky -->
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Obrázek</th>
-                    <th>Název</th>
-                    <th>Cena</th>
-                    <th>Skladem</th>
-                    <th>Akce</th>
+                    <th>ID</th>          <!-- Sloupec s ID produktu -->
+                    <th>Obrázek</th>     <!-- Sloupec s náhledem obrázku -->
+                    <th>Název</th>       <!-- Sloupec s názvem produktu -->
+                    <th>Cena</th>        <!-- Sloupec s cenou produktu -->
+                    <th>Skladem</th>     <!-- Sloupec s počtem kusů na skladě -->
+                    <th>Akce</th>        <!-- Sloupec s možnostmi úprav/smazání -->
                 </tr>
             </thead>
+            
+            <!-- Tělo tabulky - procházení všech produktů -->
             <tbody>
                 {% for produkt in produkty %}
                 <tr>
+                    <!-- ID produktu -->
                     <td>{{ produkt.id }}</td>
+                    
+                    <!-- Sloupec s obrázkem produktu -->
                     <td>
                         {% if produkt.image %}
-                        <img src="{{ url_for('static', filename='images/produkty/' + produkt.image) }}" alt="{{ produkt.name }}" class="admin-thumbnail">
+                            <!-- Pokud existuje obrázek, zobrazí se náhled -->
+                            <img src="{{ url_for('static', filename='images/produkty/' + produkt.image) }}" 
+                                 alt="{{ produkt.name }}" 
+                                 class="admin-thumbnail">
                         {% else %}
-                        <span class="no-image">Bez obrázku</span>
+                            <!-- Pokud není obrázek, zobrazí se text -->
+                            <span class="no-image">Bez obrázku</span>
                         {% endif %}
                     </td>
+                    
+                    <!-- Název produktu -->
                     <td>{{ produkt.name }}</td>
+                    
+                    <!-- Cena produktu -->
                     <td>{{ produkt.price }} Kč</td>
+                    
+                    <!-- Počet kusů na skladě -->
                     <td>{{ produkt.stock }}</td>
+                    
+                    <!-- Sloupec s akcemi pro každý produkt -->
                     <td class="actions">
-                        <a href="{{ url_for('admin_edit_produkt', produkt_id=produkt.id) }}" class="btn-small" title="Upravit"><i class="fas fa-edit"></i></a>
-                        <button onclick="confirmDelete({{ produkt.id }})" class="btn-small btn-danger" title="Smazat"><i class="fas fa-trash"></i></button>
+                        <!-- Odkaz na editaci produktu -->
+                        <a href="{{ url_for('admin_edit_produkt', produkt_id=produkt.id) }}" 
+                           class="btn-small" 
+                           title="Upravit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        
+                        <!-- Tlačítko pro smazání produktu -->
+                        <button onclick="confirmDelete({{ produkt.id }})" 
+                                class="btn-small btn-danger" 
+                                title="Smazat">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -50,9 +85,13 @@
     <!-- Modal pro potvrzení smazání -->
     <div id="delete-modal" class="modal">
         <div class="modal-content">
+            <!-- Tlačítko pro zavření modálního okna -->
             <span class="close-modal">&times;</span>
+            
             <h2>Potvrzení smazání</h2>
             <p>Opravdu chcete smazat tento produkt? Tato akce je nevratná.</p>
+            
+            <!-- Formulář pro smazání produktu -->
             <form id="delete-form" method="POST" action="">
                 <div class="modal-buttons">
                     <button type="submit" class="btn-danger">Ano, smazat</button>
@@ -63,6 +102,7 @@
     </div>
 </div>
 
+<!-- Skript pro potvrzení smazání produktu -->
 <script>
     // Funkce pro otevření potvrzovacího modalu při mazání produktu
     function confirmDelete(id) {
