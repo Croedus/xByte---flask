@@ -1347,49 +1347,6 @@ def admin_edit_uzivatel(uzivatel_id):
         
     return render_template('admin/uzivatel_form.html', uzivatel=uzivatel)
 
-# ----- VYTVOŘENÍ PRVNÍHO ADMINISTRÁTORA -----
-# Tento route můžete po prvním použití odstranit nebo zabezpečit
-
-@app.route('/create-admin/<string:secret_key>')
-def create_admin(secret_key):
-    """
-    Jednorázový route pro vytvoření prvního administrátora.
-    Pro zabezpečení vyžaduje tajný klíč, který by měl být složitý.
-    
-    Použití:
-    1. Přihlaste se jako uživatel, kterého chcete povýšit na administrátora
-    2. Navštivte URL /create-admin/vas_tajny_klic
-    3. Po úspěšném povýšení tento route odstraňte nebo zabezpečte
-    """
-    # !!! ZMĚŇTE TENTO KLÍČ !!! - použijte složitý řetězec
-    if secret_key != 'tajny_klic_pro_vytvoreni_admina':
-        flash("Neplatný klíč!", "error")
-        return redirect(url_for('index'))
-    
-    # Musíte být přihlášeni
-    if 'user_id' not in session:
-        flash("Musíte být přihlášeni!", "error")
-        return redirect(url_for('login'))
-    
-    try:
-        conn = get_db_connection()
-        if not conn:
-            flash("Nelze se připojit k databázi!", "error")
-            return redirect(url_for('index'))
-            
-        cursor = conn.cursor()
-        cursor.execute("UPDATE xbyte SET role = 'admin' WHERE id = %s", (session['user_id'],))
-        conn.commit()
-        cursor.close()
-        conn.close()
-        
-        flash("Váš účet byl povýšen na administrátora!", "success")
-        return redirect(url_for('index'))
-    except mysql.connector.Error as err:
-        flash(f"Chyba při povyšování uživatele: {str(err)}", "error")
-        return redirect(url_for('index'))
-
-
 # ===== SPUŠTĚNÍ APLIKACE =====
 
 if __name__ == '__main__':
