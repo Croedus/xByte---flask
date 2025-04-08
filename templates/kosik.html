@@ -3,16 +3,19 @@
 {% block title %}Košík | xByte{% endblock %}
 
 {% block content %}
+<!-- Načtení CSS stylu pro stránku košíku -->
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 
 <div class="container">
+    <!-- Hlavní nadpis stránky -->
     <h1 class="page-title">Váš nákupní košík</h1>
     
+    <!-- Kontejner pro obsah košíku - bude dynamicky naplněn pomocí JavaScriptu -->
     <div class="cart-container" id="cart-container">
         <!-- Obsah košíku bude dynamicky načten pomocí JavaScriptu -->
     </div>
     
-    <!-- Login modal -->
+    <!-- Modální okno pro přihlášení - zobrazí se, pokud uživatel není přihlášen a pokusí se dokončit objednávku -->
     <div id="login-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -25,7 +28,7 @@
         </div>
     </div>
     
-    <!-- Order success modal -->
+    <!-- Modální okno pro úspěšnou objednávku - zobrazí se po úspěšném odeslání objednávky -->
     <div id="order-success-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -39,27 +42,44 @@
 </div>
 
 <script>
+    // Spustí kód až po kompletním načtení DOM
     document.addEventListener('DOMContentLoaded', function() {
-        // Modal elements
+        // ----------- INICIALIZACE PROMĚNNÝCH A ELEMENTŮ -----------
+        
+        // Získání referencí na modální okna
         const loginModal = document.getElementById('login-modal');
         const orderSuccessModal = document.getElementById('order-success-modal');
+        // Získání všech tlačítek pro zavření modálních oken
         const closeButtons = document.querySelectorAll('.close-modal');
         
-        // Close modal functionality
+        // ----------- OBSLUHA MODÁLNÍCH OKEN -----------
+        
+        // Přidání event listenerů pro zavření modálních oken po kliknutí na křížek
         closeButtons.forEach(button => {
             button.addEventListener('click', function() {
+                // Skrytí všech modálních oken
                 loginModal.style.display = 'none';
                 orderSuccessModal.style.display = 'none';
             });
         });
         
-        // Funkce pro vykreslení košíku
+        // ----------- HLAVNÍ FUNKCE PRO VYKRESLENÍ KOŠÍKU -----------
+        
+        /**
+         * Vykreslí obsah nákupního košíku
+         * - Pokud je košík prázdný, zobrazí zprávu o prázdném košíku
+         * - Pokud košík obsahuje položky, vykreslí je a přidá formulář pro fakturační údaje
+         */
         function renderCart() {
+            // Získání reference na kontejner košíku pro vkládání obsahu
             const cartContainer = document.getElementById('cart-container');
+            // Načtení košíku z localStorage, pokud neexistuje, použije prázdné pole
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             
+            // ----------- ZPRACOVÁNÍ PRÁZDNÉHO KOŠÍKU -----------
+            
             if (cart.length === 0) {
-                // Košík je prázdný
+                // Košík je prázdný - zobrazení informativní zprávy s možností pokračovat v nákupu
                 cartContainer.innerHTML = `
                     <div class="empty-cart">
                         <i class="fas fa-shopping-cart fa-5x"></i>
@@ -69,10 +89,12 @@
                     </div>
                 `;
             } else {
-                // Výpočet celkové ceny
+                // ----------- ZPRACOVÁNÍ NEPRÁZDNÉHO KOŠÍKU -----------
+                
+                // Proměnná pro výpočet celkové ceny
                 let totalPrice = 0;
                 
-                // Nová struktura položek košíku
+                // Vytvoření hlavičky tabulky s položkami košíku
                 let cartItemsHTML = `
                     <div class="cart-items-header">
                         <div class="cart-header-product">Produkt</div>
@@ -84,10 +106,12 @@
                     </div>
                 `;
                 
-                // Pole pro uložení ID produktů, abychom mohli načíst skladové zásoby
+                // Vytvoření pole ID produktů pro AJAX dotaz na skladové zásoby
                 const productIds = cart.map(item => item.id);
                 
-                // Načtení skladových zásob
+                // ----------- NAČTENÍ SKLADOVÝCH ZÁSOB ZE SERVERU -----------
+                
+                // AJAX dotaz na server pro získání informací o dostupnosti produktů
                 fetch('{{ url_for("get_stock_info") }}', {
                     method: 'POST',
                     headers: {
@@ -97,12 +121,18 @@
                 })
                 .then(response => response.json())
                 .then(stockData => {
-                    // Pokračovat ve vykreslování s informacemi o skladových zásobách
+                    // ----------- VYKRESLENÍ POLOŽEK KOŠÍKU S INFORMACEMI O DOSTUPNOSTI -----------
+                    
+                    // Pro každou položku v košíku vytvoříme HTML reprezentaci
                     cart.forEach(item => {
+                        // Výpočet ceny za položku (cena * množství)
                         const itemTotal = item.price * item.quantity;
+                        // Přičtení k celkové ceně
                         totalPrice += itemTotal;
+                        // Získání informací o skladových zásobách pro aktuální produkt
                         const stock = stockData[item.id] || 0;
                         
+                        // Vytvoření HTML pro položku košíku
                         cartItemsHTML += `
                             <div class="cart-item" data-id="${item.id}">
                                 <div class="cart-item-product">
@@ -110,9 +140,11 @@
                                     <div class="cart-item-name">${item.name}</div>
                                 </div>
                                 <div class="cart-item-stock">
+                                    <!-- Zobrazení stavu zásob s vizuálním varováním při nízkém počtu -->
                                     <span class="stock-status ${stock < 5 ? 'low-stock' : ''}">${stock} ks</span>
                                 </div>
                                 <div class="cart-item-quantity">
+                                    <!-- Ovládací prvky pro změnu množství -->
                                     <div class="quantity-controls">
                                         <button class="quantity-btn decrease-btn" data-id="${item.id}">-</button>
                                         <input type="number" value="${item.quantity}" min="1" max="99" class="quantity-input" data-id="${item.id}">
@@ -122,6 +154,7 @@
                                 <div class="cart-item-price">${item.price} Kč</div>
                                 <div class="cart-item-total">${itemTotal} Kč</div>
                                 <div class="cart-item-action">
+                                    <!-- Tlačítko pro odstranění položky -->
                                     <button class="remove-btn" data-id="${item.id}">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -130,28 +163,37 @@
                         `;
                     });
                     
-                    // Výchozí volby dopravy a platby
+                    // ----------- DEFINICE MOŽNOSTÍ DOPRAVY A PLATBY -----------
+                    
+                    // Definice dostupných způsobů dopravy
                     const shippingOptions = [
                         { id: 'pickup', name: 'Vyzvednutí na prodejně', price: 0 },
                         { id: 'delivery', name: 'Doručení na adresu', price: 159 }
                     ];
                     
+                    // Definice dostupných způsobů platby
                     const paymentOptions = [
                         { id: 'cash', name: 'Hotově/kartou', price: 39 },
                         { id: 'transfer', name: 'Převodem', price: 0 }
                     ];
                     
-                    // Vykreslení košíku s položkami a souhrnem
+                    // ----------- SESTAVENÍ KOMPLETNÍHO HTML PRO KOŠÍK -----------
+                    
+                    // Vykreslení košíku s položkami, formulářem a souhrnem objednávky
                     cartContainer.innerHTML = `
                         <div class="cart-main-container">
+                            <!-- Levý sloupec obsahující položky, dopravu, platbu a fakturační údaje -->
                             <div class="cart-left-column">
+                                <!-- Sekce s položkami košíku -->
                                 <div class="cart-items">
                                     ${cartItemsHTML}
                                 </div>
                                 
+                                <!-- Sekce pro výběr dopravy a platby -->
                                 <div class="shipping-payment-section">
                                     <h3>Způsob dopravy</h3>
                                     <div class="shipping-options">
+                                        <!-- Vykreslení možností dopravy -->
                                         ${shippingOptions.map(option => `
                                             <label class="shipping-payment-option">
                                                 <input type="radio" name="shipping" value="${option.id}" 
@@ -164,6 +206,7 @@
                                     
                                     <h3>Způsob platby</h3>
                                     <div class="payment-options">
+                                        <!-- Vykreslení možností platby -->
                                         ${paymentOptions.map(option => `
                                             <label class="shipping-payment-option">
                                                 <input type="radio" name="payment" value="${option.id}" 
@@ -175,28 +218,36 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Sekce pro fakturační údaje -->
                                 <div class="cart-billing-section">
                                     <h3>Fakturační údaje</h3>
                                     <form id="billing-form" novalidate>
+                                        <!-- Formulářové pole pro jméno a příjmení -->
                                         <div class="form-row">
                                             <div class="form-group">
                                                 <label for="firstname">Jméno</label>
+                                                <!-- Pole pro jméno - readonly, protože se načítá z profilu -->
                                                 <input type="text" id="firstname" name="firstname" readonly>
                                             </div>
                                             <div class="form-group">
                                                 <label for="lastname">Příjmení</label>
+                                                <!-- Pole pro příjmení - readonly, protože se načítá z profilu -->
                                                 <input type="text" id="lastname" name="lastname" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="email">E-mail</label>
+                                            <!-- Pole pro e-mail - readonly, protože se načítá z profilu -->
                                             <input type="email" id="email" name="email" readonly>
                                         </div>
                                         <div class="form-group">
                                             <label for="phone">Telefon *</label>
+                                            <!-- Pole pro telefon - povinné pole -->
                                             <input type="tel" id="phone" name="phone" required>
+                                            <!-- Zpráva o chybě při nesprávném formátu telefonního čísla -->
                                             <div id="phone-error" class="validation-message" style="display: none;">Nebyl dodržen formát telefonního čísla. Zadejte buď 9 číslic, nebo +předvolba (max. 3 číslice) a 9 číslic.</div>
                                         </div>
+                                        <!-- Formulářové pole pro adresu -->
                                         <div class="form-row">
                                             <div class="form-group">
                                                 <label for="street">Ulice *</label>
@@ -228,69 +279,85 @@
                                 </div>
                             </div>
                             
+                            <!-- Pravý sloupec se souhrnem objednávky -->
                             <div class="cart-summary">
                                 <h3>Souhrn objednávky</h3>
+                                <!-- Zobrazení mezisoučtu (cena zboží bez dopravy a platby) -->
                                 <div class="summary-row">
                                     <span>Mezisoučet:</span>
                                     <span>${totalPrice} Kč</span>
                                 </div>
+                                <!-- Zobrazení ceny dopravy -->
                                 <div class="summary-row shipping-cost">
                                     <span>Doprava:</span>
                                     <span>0 Kč</span>
                                 </div>
+                                <!-- Zobrazení ceny platby -->
                                 <div class="summary-row payment-cost">
                                     <span>Platba:</span>
                                     <span>0 Kč</span>
                                 </div>
+                                <!-- Zobrazení celkové ceny (včetně dopravy a platby) -->
                                 <div class="summary-row total">
                                     <span>Celkem:</span>
                                     <span>${totalPrice} Kč</span>
                                 </div>
+                                <!-- Tlačítko pro dokončení objednávky -->
                                 <button class="checkout-btn">Objednat a zaplatit</button>
                             </div>
                         </div>
                     `;
                     
-                    // Načtení údajů přihlášeného uživatele
+                    // ----------- INICIALIZACE DOPLŇKOVÝCH FUNKCÍ A EVENT LISTENERŮ -----------
+                    
+                    // Načtení údajů přihlášeného uživatele pro předvyplnění formuláře
                     fetchUserData();
                     
-                    // Přidání event listenerů po vykreslení košíku
+                    // Přidání event listenerů pro tlačítka a interaktivní prvky v košíku
                     addCartEventListeners();
                     
-                    // Přidání event listenerů pro dopravu a platbu
+                    // Přidání event listenerů pro změny způsobu dopravy
                     document.querySelectorAll('input[name="shipping"]').forEach(radio => {
                         radio.addEventListener('change', updateOrderSummary);
                     });
                     
+                    // Přidání event listenerů pro změny způsobu platby
                     document.querySelectorAll('input[name="payment"]').forEach(radio => {
                         radio.addEventListener('change', updateOrderSummary);
                     });
                     
-                    // Přidání validace telefonu při ztrátě fokusu
+                    // Přidání validace telefonního čísla při ukončení editace
                     const phoneInput = document.getElementById('phone');
                     phoneInput.addEventListener('blur', function() {
                         validatePhone(this);
                     });
                     
-                    // Inicializace souhrnu
+                    // Aktualizace souhrnu objednávky podle výchozích hodnot
                     updateOrderSummary();
                     
-                    // Přidání event listeneru pro tlačítko objednávky
+                    // ----------- EVENT LISTENER PRO TLAČÍTKO OBJEDNÁVKY -----------
+                    
+                    // Přidání event listeneru pro tlačítko dokončení objednávky
                     const checkoutButton = document.querySelector('.checkout-btn');
                     if (checkoutButton) {
                         checkoutButton.addEventListener('click', function(e) {
-                            // Zabráníme výchozímu chování
+                            // Zabránění výchozímu chování (reload stránky)
                             e.preventDefault();
                             
                             // Validace formuláře před zpracováním objednávky
                             if (validateBillingForm()) {
+                                // Získání vybraného způsobu dopravy
                                 const shippingOption = document.querySelector('input[name="shipping"]:checked').value;
+                                // Získání vybraného způsobu platby
                                 const paymentOption = document.querySelector('input[name="payment"]:checked').value;
+                                // Získání ceny za dopravu
                                 const shippingPrice = parseFloat(document.querySelector('input[name="shipping"]:checked').dataset.price);
+                                // Získání ceny za platbu
                                 const paymentPrice = parseFloat(document.querySelector('input[name="payment"]:checked').dataset.price);
+                                // Výpočet celkové ceny včetně poplatků za dopravu a platbu
                                 const totalWithFees = totalPrice + shippingPrice + paymentPrice;
                                 
-                                // Získání fakturačních údajů
+                                // Získání fakturačních údajů z formuláře
                                 const billingForm = document.getElementById('billing-form');
                                 const billingData = {
                                     firstname: billingForm.firstname.value,
@@ -304,14 +371,17 @@
                                     country: billingForm.country.value
                                 };
                                 
+                                // Zpracování objednávky
                                 processOrder(cart, totalWithFees, shippingOption, paymentOption, billingData);
                             }
                         });
                     }
                 })
                 .catch(error => {
+                    // ----------- OŠETŘENÍ CHYBY PŘI ZÍSKÁVÁNÍ DAT O DOSTUPNOSTI PRODUKTŮ -----------
+                    
                     console.error('Chyba při načítání informací o skladových zásobách:', error);
-                    // Zobrazit chybovou zprávu a nabídnout možnost zkusit znovu načíst stránku
+                    // Zobrazení chybové zprávy uživateli s možností obnovit stránku
                     cartContainer.innerHTML = `
                         <div class="error-message">
                             <h2>Došlo k chybě při načítání informací o produktech</h2>
@@ -323,29 +393,39 @@
             }
         }
         
-        // Funkce pro validaci telefonního čísla
+        // ----------- VALIDAČNÍ FUNKCE -----------
+        
+        /**
+         * Validuje formát telefonního čísla
+         * Podporuje dva formáty:
+         * 1) Bez předvolby: přesně 9 číslic
+         * 2) S předvolbou: + následované 1-3 číslicemi a 9 číslicemi telefonu
+         * @param {HTMLElement} phoneInput - Input element s telefonním číslem
+         * @returns {boolean} - Vrací true, pokud je telefon validní
+         */
         function validatePhone(phoneInput) {
             const phoneValue = phoneInput.value.trim();
             const phoneErrorElement = document.getElementById('phone-error');
             let isValidPhone = false;
             
             if (phoneValue.startsWith('+')) {
-                // S předvolbou: +XXX XXXXXXXXX
-                const withoutPlus = phoneValue.substring(1); // odstraníme +
-                const digits = withoutPlus.replace(/\D/g, ''); // jen číslice
+                // Formát s předvolbou: +XXX XXXXXXXXX
+                const withoutPlus = phoneValue.substring(1); // odstranění znaku +
+                const digits = withoutPlus.replace(/\D/g, ''); // odstranění všech nečíselných znaků
                 
-                // Ujistíme se, že máme předvolbu (max 3 číslice) + 9 číslic telefonu
+                // Kontrola, zda máme předvolbu (1-3 číslice) + 9 číslic telefonu
                 if (digits.length >= 9 + 1 && digits.length <= 9 + 3) {
                     isValidPhone = true;
                 }
             } else {
-                // Bez předvolby: očekáváme přesně 9 číslic
+                // Formát bez předvolby: xxxxxxxxx (přesně 9 číslic)
                 const digits = phoneValue.replace(/\D/g, '');
                 if (digits.length === 9) {
                     isValidPhone = true;
                 }
             }
             
+            // Zobrazení chybové zprávy, pokud telefon není validní
             if (!isValidPhone && phoneValue !== '') {
                 phoneInput.classList.add('error');
                 if (phoneErrorElement) {
@@ -361,14 +441,21 @@
             }
         }
         
-        // Funkce pro validaci formuláře fakturačních údajů
+        /**
+         * Validuje celý fakturační formulář
+         * Kontroluje, zda jsou vyplněna všechna povinná pole
+         * a zda je správně vyplněn telefon
+         * @returns {boolean} - Vrací true, pokud je formulář validní
+         */
         function validateBillingForm() {
             const form = document.getElementById('billing-form');
             const requiredFields = form.querySelectorAll('[required]');
             let isValid = true;
             
+            // Kontrola všech povinných polí
             requiredFields.forEach(field => {
                 if (!field.value.trim()) {
+                    // Označení nevyplněného pole jako chybné
                     field.classList.add('error');
                     isValid = false;
                 } else {
@@ -385,12 +472,18 @@
             return isValid;
         }
         
-        // Funkce pro načtení údajů přihlášeného uživatele
+        // ----------- FUNKCE PRO KOMUNIKACI SE SERVEREM -----------
+        
+        /**
+         * Načítá údaje přihlášeného uživatele ze serveru
+         * Předvyplňuje formulář fakturačními údaji uživatele
+         */
         function fetchUserData() {
             fetch('{{ url_for("get_user_data") }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.authenticated) {
+                        // Předvyplnění formuláře údaji uživatele, pokud je přihlášen
                         document.getElementById('firstname').value = data.firstname || '';
                         document.getElementById('lastname').value = data.lastname || '';
                         document.getElementById('email').value = data.email || '';
@@ -401,29 +494,46 @@
                 });
         }
         
-        // Funkce pro aktualizaci souhrnu objednávky
+        /**
+         * Aktualizuje souhrn objednávky na základě vybraných možností dopravy a platby
+         * Přepočítává celkovou cenu a aktualizuje zobrazení v košíku
+         */
         function updateOrderSummary() {
+            // Získání ceny vybrané dopravy
             const shippingPrice = parseFloat(document.querySelector('input[name="shipping"]:checked').dataset.price);
+            // Získání ceny vybrané platby
             const paymentPrice = parseFloat(document.querySelector('input[name="payment"]:checked').dataset.price);
+            // Získání mezisoučtu (cena zboží)
             const subtotal = parseFloat(document.querySelector('.summary-row span:last-child').textContent.replace(' Kč', ''));
+            // Výpočet celkové ceny
             const total = subtotal + shippingPrice + paymentPrice;
             
+            // Aktualizace zobrazených cen v souhrnu
             document.querySelector('.shipping-cost span:last-child').textContent = shippingPrice === 0 ? 'zdarma' : shippingPrice + ' Kč';
             document.querySelector('.payment-cost span:last-child').textContent = paymentPrice === 0 ? 'zdarma' : paymentPrice + ' Kč';
             document.querySelector('.total span:last-child').textContent = total + ' Kč';
         }
         
-        // Funkce pro zpracování objednávky
+        /**
+         * Zpracovává objednávku - kontroluje přihlášení uživatele
+         * Pokud uživatel není přihlášen, zobrazí modální okno s výzvou k přihlášení
+         * Pokud je přihlášen, pokračuje v odeslání objednávky
+         * @param {Array} cart - Pole produktů v košíku
+         * @param {number} totalPrice - Celková cena objednávky včetně dopravy a platby
+         * @param {string} shippingOption - Vybraný způsob dopravy
+         * @param {string} paymentOption - Vybraný způsob platby
+         * @param {Object} billingData - Fakturační údaje
+         */
         function processOrder(cart, totalPrice, shippingOption, paymentOption, billingData) {
-            // Nejprve zkontrolujeme, zda je uživatel přihlášen
+            // Kontrola, zda je uživatel přihlášen
             fetch('{{ url_for("check_auth") }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.authenticated) {
-                        // Uživatel je přihlášen, zpracujeme objednávku
+                        // Uživatel je přihlášen, pokračujeme v odeslání objednávky
                         submitOrder(cart, totalPrice, shippingOption, paymentOption, billingData);
                     } else {
-                        // Uživatel není přihlášen, zobrazíme modal
+                        // Uživatel není přihlášen, zobrazíme modální okno s výzvou k přihlášení
                         loginModal.style.display = 'flex';
                     }
                 })
@@ -433,8 +543,16 @@
                 });
         }
         
-        // Funkce pro odeslání objednávky na server
+        /**
+         * Odesílá objednávku na server
+         * @param {Array} cart - Pole produktů v košíku
+         * @param {number} totalPrice - Celková cena objednávky
+         * @param {string} shippingOption - Vybraný způsob dopravy
+         * @param {string} paymentOption - Vybraný způsob platby
+         * @param {Object} billingData - Fakturační údaje
+         */
         function submitOrder(cart, totalPrice, shippingOption, paymentOption, billingData) {
+            // AJAX dotaz pro odeslání objednávky na server
             fetch('{{ url_for("place_order") }}', {
                 method: 'POST',
                 headers: {
@@ -451,19 +569,24 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Objednávka byla úspěšná
-                    localStorage.removeItem('cart'); // Vymaže košík
+                    // ----------- ÚSPĚŠNÉ ODESLÁNÍ OBJEDNÁVKY -----------
+                    
+                    // Vymazání košíku z localStorage po úspěšné objednávce
+                    localStorage.removeItem('cart');
+                    // Zobrazení modálního okna s potvrzením úspěšné objednávky
                     orderSuccessModal.style.display = 'flex';
                 } else {
-                    // Došlo k chybě
+                    // ----------- ZPRACOVÁNÍ CHYB PŘI OBJEDNÁVCE -----------
+                    
                     if (data.insufficientStock) {
-                        // Nedostatek zboží - formátujeme specifickou hlášku
+                        // Specifická chyba - nedostatek zboží na skladě
+                        // Příprava chybové hlášky zobrazující dostupné a požadované množství
                         let errorMessage = "Nedostatek zboží na skladě:<br>";
                         data.insufficientStock.forEach(item => {
                             errorMessage += `- ${item.name}: požadováno ${item.requested} ks, skladem ${item.available} ks<br>`;
                         });
                         
-                        // Vytvoříme a zobrazíme modální okno s chybou
+                        // Vytvoření a zobrazení modálního okna s informací o nedostatku zboží
                         const errorModal = document.createElement('div');
                         errorModal.className = 'modal';
                         errorModal.style.display = 'flex';
@@ -478,9 +601,10 @@
                             </div>
                         `;
                         
+                        // Přidání modálního okna do DOM
                         document.body.appendChild(errorModal);
                         
-                        // Přidáme event listenery pro zavření
+                        // Přidání event listenerů pro zavření modálního okna
                         errorModal.querySelector('.close-modal').addEventListener('click', function() {
                             errorModal.remove();
                         });
@@ -489,89 +613,131 @@
                             errorModal.remove();
                         });
                     } else {
-                        // Jiná chyba
+                        // Obecná chyba při zpracování objednávky
                         alert('Chyba při zpracování objednávky: ' + data.message);
                     }
                 }
             })
             .catch(error => {
+                // Logování a zobrazení chyby při selhání komunikace se serverem
                 console.error('Chyba při odesílání objednávky:', error);
                 alert('Došlo k chybě při odesílání objednávky. Zkuste to prosím znovu.');
             });
         }
         
-        // Přidání event listenerů pro tlačítka v košíku
+        // ----------- FUNKCE PRO INTERAKCI S KOŠÍKEM -----------
+        
+        /**
+         * Přidává event listenery pro interaktivní prvky v košíku
+         * - tlačítka pro změnu množství
+         * - tlačítka pro odstranění položek
+         * - pole pro zadání množství
+         */
         function addCartEventListeners() {
-            // Event listenery pro tlačítka + a -
+            // Přidání event listenerů pro tlačítka "zvýšit množství"
             document.querySelectorAll('.increase-btn').forEach(button => {
                 button.addEventListener('click', function() {
+                    // Zvýšení množství o 1 u produktu s daným ID
                     updateQuantity(this.getAttribute('data-id'), 1);
                 });
             });
             
+            // Přidání event listenerů pro tlačítka "snížit množství"
             document.querySelectorAll('.decrease-btn').forEach(button => {
                 button.addEventListener('click', function() {
+                    // Snížení množství o 1 u produktu s daným ID
                     updateQuantity(this.getAttribute('data-id'), -1);
                 });
             });
             
-            // Event listener pro přímou změnu množství v inputu
+            // Přidání event listenerů pro přímé zadání množství
             document.querySelectorAll('.quantity-input').forEach(input => {
                 input.addEventListener('change', function() {
                     const productId = this.getAttribute('data-id');
+                    // Převod zadané hodnoty na číslo
                     const newQuantity = parseInt(this.value);
                     
+                    // Kontrola minimálního množství (1)
                     if (newQuantity < 1) {
+                        // Pokud je množství menší než 1, nastavíme na 1
                         this.value = 1;
                         updateCartItemQuantity(productId, 1);
                     } else {
+                        // Aktualizace množství v košíku
                         updateCartItemQuantity(productId, newQuantity);
                     }
                 });
             });
             
-            // Event listener pro tlačítko odstranit
+            // Přidání event listenerů pro tlačítka odstranění položky
             document.querySelectorAll('.remove-btn').forEach(button => {
                 button.addEventListener('click', function() {
+                    // Odstranění produktu s daným ID z košíku
                     removeFromCart(this.getAttribute('data-id'));
                 });
             });
         }
         
-        // Funkce pro aktualizaci množství o +1 nebo -1
+        /**
+         * Aktualizuje množství produktu v košíku o zadanou hodnotu
+         * @param {string} productId - ID produktu k aktualizaci
+         * @param {number} change - Hodnota změny (1 pro zvýšení, -1 pro snížení)
+         */
         function updateQuantity(productId, change) {
+            // Načtení košíku z localStorage
             const cart = JSON.parse(localStorage.getItem('cart'));
+            // Nalezení pozice produktu v košíku
             const productIndex = cart.findIndex(item => item.id === productId);
             
             if (productIndex !== -1) {
-                // Zajištění minimálního množství 1
+                // Zajištění, že množství neklesne pod 1
                 cart[productIndex].quantity = Math.max(1, cart[productIndex].quantity + change);
+                // Uložení aktualizovaného košíku
                 localStorage.setItem('cart', JSON.stringify(cart));
+                // Překreslení košíku pro zobrazení změn
                 renderCart();
             }
         }
         
-        // Funkce pro nastavení konkrétního množství
+        /**
+         * Nastaví konkrétní množství produktu v košíku
+         * @param {string} productId - ID produktu k aktualizaci
+         * @param {number} quantity - Nové množství
+         */
         function updateCartItemQuantity(productId, quantity) {
+            // Načtení košíku z localStorage
             const cart = JSON.parse(localStorage.getItem('cart'));
+            // Nalezení pozice produktu v košíku
             const productIndex = cart.findIndex(item => item.id === productId);
             
             if (productIndex !== -1) {
+                // Nastavení nového množství
                 cart[productIndex].quantity = quantity;
+                // Uložení aktualizovaného košíku
                 localStorage.setItem('cart', JSON.stringify(cart));
+                // Překreslení košíku pro zobrazení změn
                 renderCart();
             }
         }
         
-        // Funkce pro odstranění položky z košíku
+        /**
+         * Odstraní produkt z košíku
+         * @param {string} productId - ID produktu k odstranění
+         */
         function removeFromCart(productId) {
+            // Načtení košíku z localStorage
             const cart = JSON.parse(localStorage.getItem('cart'));
+            // Filtrování košíku - odstranění položky s daným ID
             const updatedCart = cart.filter(item => item.id !== productId);
+            // Uložení aktualizovaného košíku
             localStorage.setItem('cart', JSON.stringify(updatedCart));
+            // Překreslení košíku
             renderCart();
         }
         
-        // Inicializace košíku při načtení stránky
+        // ----------- INICIALIZACE STRÁNKY -----------
+        
+        // Vykreslení košíku při načtení stránky
         renderCart();
     });
 </script>
